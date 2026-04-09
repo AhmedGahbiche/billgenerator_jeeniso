@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>JEENISo | Archives</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-highest": "#353534",
+                        "surface-dim": "#131313",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-on-surface": "#313030",
+                        "inverse-primary": "#005ac2",
+                        "surface-container-high": "#2a2a2a",
+                        "outline-variant": "#424754",
+                        "on-primary": "#002e6a",
+                        "secondary": "#4edea3",
+                        "error": "#ffb4ab",
+                        "tertiary": "#ffb786",
+                        "surface-bright": "#393939",
+                        "surface-container-low": "#1c1b1b",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface": "#131313",
+                        "on-primary-container": "#00285d",
+                        "on-secondary": "#003824",
+                        "on-background": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "background": "#131313",
+                        "primary": "#adc6ff",
+                        "surface-container": "#201f1f",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-container": "#00a572",
+                        "primary-container": "#4d8eff",
+                        "on-tertiary": "#502400",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-container": "#df7412",
+                        "on-tertiary-fixed": "#311400",
+                        "on-surface": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#461f00",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#00311f",
+                        "surface-tint": "#adc6ff",
+                        "outline": "#8c909f",
+                        "on-primary-fixed-variant": "#004395"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        body {
+            background-color: #0e0e0e;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 10px;
+        }
+
+        .brand-logo {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden custom-scrollbar">
+    <header
+        class="bg-[#131313]/80 backdrop-blur-xl border-b border-outline-variant/10 flex justify-between items-center w-full px-8 h-16 fixed top-0 z-50">
+        <div class="flex items-center gap-6">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-28 flex items-center justify-center p-1 shrink-0">
+                    <img class="brand-logo hidden" data-brand-logo alt="JEENISo" src="assets/jeeniso-logo.PNG" crossorigin="anonymous" />
+                    <span class="material-symbols-outlined text-[#002e6a] text-lg" data-logo-fallback
+                        style="font-variation-settings: 'FILL' 1;">description</span>
+                </div>
+                <div>
+                    <h1 class="text-on-surface font-black tracking-tighter text-lg uppercase leading-none">JEENISo</h1>
+                    <p class="text-[9px] text-primary font-bold tracking-[0.2em] uppercase leading-none mt-1">Plateforme
+                        Facturation</p>
+                </div>
+            </div>
+            <div class="h-6 w-[1px] bg-outline-variant/20 mx-2"></div>
+            <nav class="flex gap-4">
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest"
+                    href="#">Tableau de bord</a>
+                <a class="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest"
+                    href="code.html">Nouvelle Facture</a>
+                <a class="text-primary text-[10px] font-bold uppercase tracking-widest border-b-2 border-primary pb-5 -mb-5"
+                    href="archive.html">Archives</a>
+            </nav>
+        </div>
+        <div class="flex items-center gap-2">
+            <button
+                class="w-8 h-8 flex items-center justify-center rounded-full text-[#C2C6D6] hover:bg-surface-container-high transition-all">
+                <span class="material-symbols-outlined text-xl">settings</span>
+            </button>
+            <div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20 ml-2">
+                <img alt="User" class="w-full h-full object-cover"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBouf2Yw5C0GYV0Zzexm2DPwWsVVA1mI7TNNTr-sYH2i3Srh0mhrD9Wnbzpxo46nJv29AD7o5EnfAzvQwYq84Yv2Wd3d_MJPWvAeLP8rlAwX8P6V1YsI0-udJVxRzvL5BUPCvB95zT260CZl8zgBy7WuPcF7esDEVLTw39dbaDNPYHJPKaHaXdCkJzxrVQ7LUx5HCIdknAS5IfSOdFUdtBBz4FoNVfCvdNM7cMF7yHEJ9IOlCOXdEzUXSWgvrzxijJe1-7dj5kJlaQ" />
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full pt-28 pb-20 px-4 md:px-8">
+        <div class="max-w-7xl mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="material-symbols-outlined text-primary text-sm">inventory_2</span>
+                        <span class="text-primary text-[10px] font-black tracking-[0.2em] uppercase">Historique</span>
+                    </div>
+                    <h2 class="text-4xl font-black tracking-tight text-on-surface">Archives</h2>
+                    <p class="text-on-surface-variant text-sm mt-2">Retrouvez les factures que vous avez enregistrées.</p>
+                </div>
+                <a href="code.html"
+                    class="px-6 py-2.5 bg-gradient-to-br from-[#ADC6FF] to-[#4D8EFF] text-[#002e6a] rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl shadow-primary/10 group">
+                    <span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">add</span>
+                    Nouvelle facture
+                </a>
+            </div>
+
+            <div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 shadow-lg">
+                <div class="flex items-center justify-between mb-6">
+                    <p class="text-[10px] font-black text-primary uppercase tracking-widest">Factures enregistrées</p>
+                </div>
+
+                <div id="emptyState" class="hidden p-10 rounded-2xl bg-surface-container-lowest/40 border border-outline-variant/10">
+                    <p class="text-on-surface font-bold">Aucune facture enregistrée</p>
+                    <p class="text-on-surface-variant text-sm mt-2">Créez une facture puis cliquez sur “Enregistrer
+                        Brouillon” ou générez un PDF.</p>
+                </div>
+
+                <div class="overflow-x-auto" id="tableWrap">
+                    <table class="w-full text-left min-w-[760px]">
+                        <thead>
+                            <tr class="border-b border-outline-variant/20">
+                                <th class="pb-4 text-[10px] font-black text-primary uppercase tracking-widest">Référence</th>
+                                <th class="pb-4 text-[10px] font-black text-primary uppercase tracking-widest">Client</th>
+                                <th class="pb-4 text-[10px] font-black text-primary uppercase tracking-widest">Date</th>
+                                <th class="pb-4 text-[10px] font-black text-primary uppercase tracking-widest text-right">Total
+                                    TTC</th>
+                                <th class="pb-4 text-[10px] font-black text-primary uppercase tracking-widest text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rows" class="divide-y divide-outline-variant/10"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            const logos = document.querySelectorAll('img[data-brand-logo]');
+            const fallbacks = document.querySelectorAll('[data-logo-fallback]');
+            if (logos.length) {
+                let activated = false;
+                const showLogosHideFallbacks = () => {
+                    logos.forEach((img) => img.classList.remove('hidden'));
+                    fallbacks.forEach((el) => el.classList.add('hidden'));
+                };
+
+                const tryActivateIfLoaded = () => {
+                    if (activated) return;
+                    const anyLoaded = Array.from(logos).some((img) => img.complete && img.naturalWidth > 0);
+                    if (anyLoaded) {
+                        activated = true;
+                        showLogosHideFallbacks();
+                    }
+                };
+
+                logos.forEach((img) => {
+                    img.addEventListener('load', () => {
+                        tryActivateIfLoaded();
+                    });
+                    img.addEventListener('error', () => {
+                        img.classList.add('hidden');
+                    });
+                });
+
+                // Handle cached images where 'load' may not fire
+                tryActivateIfLoaded();
+            }
+
+            const STORAGE_KEY = 'jeeniso_invoices_v1';
+
+            const readInvoicesFromDisk = async () => {
+                try {
+                    const res = await fetch('/api/invoices', { cache: 'no-store' });
+                    if (!res.ok) return null;
+                    const data = await res.json();
+                    return Array.isArray(data) ? data : null;
+                } catch {
+                    return null;
+                }
+            };
+
+            const readInvoices = () => {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    const arr = raw ? JSON.parse(raw) : [];
+                    return Array.isArray(arr) ? arr : [];
+                } catch {
+                    return [];
+                }
+            };
+
+            const writeInvoicesToDisk = async (arr) => {
+                try {
+                    await fetch('/api/invoices', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Array.isArray(arr) ? arr : []),
+                    });
+                } catch {
+                    // ignore (server not running)
+                }
+            };
+
+            const writeInvoices = (arr) => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+                void writeInvoicesToDisk(arr);
+            };
+
+            const formatDate = (iso) => {
+                if (!iso) return '';
+                try {
+                    const d = new Date(iso);
+                    if (Number.isNaN(d.getTime())) return iso;
+                    return d.toLocaleDateString('fr-FR');
+                } catch {
+                    return iso;
+                }
+            };
+
+            const getCurrencyMeta = (code) => {
+                switch (code) {
+                    case 'USD':
+                        return { code: 'USD', symbol: '$', decimals: 2 };
+                    case 'TND':
+                        return { code: 'TND', symbol: 'DT', decimals: 3 };
+                    case 'EUR':
+                    default:
+                        return { code: 'EUR', symbol: '€', decimals: 2 };
+                }
+            };
+
+            const formatAmount = (value, currencyCode) => {
+                const meta = getCurrencyMeta(currencyCode);
+                const n = Number.isFinite(value) ? value : 0;
+                return new Intl.NumberFormat('fr-FR', {
+                    minimumFractionDigits: meta.decimals,
+                    maximumFractionDigits: meta.decimals,
+                }).format(n);
+            };
+
+            const formatDisplayCurrency = (value, currencyCode) => {
+                const meta = getCurrencyMeta(currencyCode);
+                return `${formatAmount(value, currencyCode)} ${meta.symbol}`;
+            };
+
+            const rowsEl = document.getElementById('rows');
+            const emptyStateEl = document.getElementById('emptyState');
+            const tableWrapEl = document.getElementById('tableWrap');
+
+            const render = async () => {
+                const disk = await readInvoicesFromDisk();
+                if (disk) writeInvoices(disk);
+                const invoices = readInvoices();
+                if (!rowsEl) return;
+
+                rowsEl.innerHTML = '';
+
+                if (!invoices.length) {
+                    emptyStateEl?.classList.remove('hidden');
+                    tableWrapEl?.classList.add('hidden');
+                    return;
+                }
+
+                emptyStateEl?.classList.add('hidden');
+                tableWrapEl?.classList.remove('hidden');
+
+                invoices.forEach((inv) => {
+                    const tr = document.createElement('tr');
+
+                    const ref = `${inv.referencePrefix || ''}${inv.referenceNumber || ''}`.trim() || '—';
+                    const client = (inv.clientName || '').trim() || '—';
+                    const date = formatDate(inv.issueDate) || '—';
+                    const currencyCode = (inv.currencyCode === 'USD' || inv.currencyCode === 'TND' || inv.currencyCode === 'EUR') ? inv.currencyCode : 'EUR';
+                    const numericTtc = inv.totalsNumeric && Number.isFinite(inv.totalsNumeric.ttc) ? inv.totalsNumeric.ttc : null;
+                    const meta = getCurrencyMeta(currencyCode);
+                    const fallbackTtc = (inv.totals && inv.totals.ttc) ? `${inv.totals.ttc} ${meta.symbol}` : null;
+                    const totalTtc = numericTtc != null ? formatDisplayCurrency(numericTtc, currencyCode) : (fallbackTtc ?? '—');
+
+                    tr.innerHTML = `
+                        <td class="py-4">
+                            <p class="text-on-surface font-mono font-bold tabular-nums">${escapeHtml(ref)}</p>
+                            <p class="text-[10px] text-on-surface-variant/70">Maj: ${formatDate(inv.updatedAt)}</p>
+                        </td>
+                        <td class="py-4 text-on-surface">${escapeHtml(client)}</td>
+                        <td class="py-4 text-on-surface-variant">${escapeHtml(date)}</td>
+                        <td class="py-4 text-right font-mono font-bold text-on-surface tabular-nums">${escapeHtml(totalTtc)}</td>
+                        <td class="py-4 text-right">
+                            <div class="flex items-center justify-end gap-2">
+                                <a href="code.html?invoiceId=${encodeURIComponent(inv.id)}" class="px-3 py-2 rounded-lg bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all text-[10px] font-bold uppercase tracking-widest">Ouvrir</a>
+                                <button type="button" data-action="delete-invoice" data-invoice-id="${escapeAttr(inv.id)}" class="px-3 py-2 rounded-lg bg-error/10 text-error border border-error/20 hover:bg-error/20 transition-all text-[10px] font-bold uppercase tracking-widest">Supprimer</button>
+                            </div>
+                        </td>
+                    `;
+
+                    rowsEl.appendChild(tr);
+                });
+            };
+
+            const escapeHtml = (s) => String(s ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+
+            const escapeAttr = (s) => escapeHtml(s).replaceAll('`', '&#96;');
+
+            // Delete handler (event delegation)
+            rowsEl?.addEventListener('click', (e) => {
+                const target = e.target;
+                if (!(target instanceof Element)) return;
+                const btn = target.closest('[data-action="delete-invoice"]');
+                if (!(btn instanceof HTMLElement)) return;
+                const id = btn.getAttribute('data-invoice-id');
+                if (!id) return;
+
+                const ok = window.confirm('Supprimer cette facture ?');
+                if (!ok) return;
+
+                const invoices = readInvoices();
+                const next = invoices.filter((x) => x && x.id !== id);
+                writeInvoices(next);
+                void render();
+            });
+
+            void render();
+        })();
+    </script>
+</body>
+
+</html>

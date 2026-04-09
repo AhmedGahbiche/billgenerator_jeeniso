@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# This app bundle is expected to live next to server.py (inside the stitch folder).
+ROOT_DIR="$(cd "$(dirname "$0")/../../.." && pwd)"
+cd "$ROOT_DIR"
+
+PYTHON_BIN=""
+if command -v python3 >/dev/null 2>&1; then
+  PYTHON_BIN="python3"
+elif [[ -x "/usr/bin/python3" ]]; then
+  PYTHON_BIN="/usr/bin/python3"
+fi
+
+if [[ -z "$PYTHON_BIN" ]]; then
+  osascript -e 'display dialog "Python 3 was not found on this Mac.\n\nInstall Python 3, then open Stitch Launcher again." buttons {"OK"} with icon stop'
+  exit 1
+fi
+
+if [[ ! -f "$ROOT_DIR/server.py" ]]; then
+  osascript -e 'display dialog "server.py was not found next to Stitch Launcher.app.\n\nKeep Stitch Launcher.app inside the stitch folder (the same folder that contains server.py)." buttons {"OK"} with icon stop'
+  exit 1
+fi
+
+escape_for_osascript() {
+  local s="$1"
+  s="${s//\\/\\\\}"
+  s="${s//\"/\\\"}"
+  printf "%s" "$s"
+}
+
+# Run in Terminal so the user sees something happening.
+# (Closing the Terminal window stops the server.)
+CMD="cd \"$ROOT_DIR\"; \"$PYTHON_BIN\" server.py --open"
+CMD_ESCAPED="$(escape_for_osascript "$CMD")"
+
+osascript \
+  -e 'tell application "Terminal" to activate' \
+  -e "tell application \"Terminal\" to do script \"$CMD_ESCAPED\""

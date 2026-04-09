@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>JEENISo | Création Facture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary-fixed": "#001a42",
+                        "surface-container-highest": "#353534",
+                        "surface-dim": "#131313",
+                        "on-error": "#690005",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-secondary-fixed-variant": "#005236",
+                        "inverse-on-surface": "#313030",
+                        "inverse-primary": "#005ac2",
+                        "surface-container-high": "#2a2a2a",
+                        "outline-variant": "#424754",
+                        "on-primary": "#002e6a",
+                        "secondary": "#4edea3",
+                        "error": "#ffb4ab",
+                        "tertiary": "#ffb786",
+                        "surface-bright": "#393939",
+                        "surface-container-low": "#1c1b1b",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface": "#131313",
+                        "on-primary-container": "#00285d",
+                        "on-secondary": "#003824",
+                        "on-background": "#e5e2e1",
+                        "error-container": "#93000a",
+                        "background": "#131313",
+                        "primary": "#adc6ff",
+                        "surface-container": "#201f1f",
+                        "secondary-fixed-dim": "#4edea3",
+                        "secondary-container": "#00a572",
+                        "primary-container": "#4d8eff",
+                        "on-tertiary": "#502400",
+                        "on-secondary-fixed": "#002113",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-container": "#df7412",
+                        "on-tertiary-fixed": "#311400",
+                        "on-surface": "#e5e2e1",
+                        "surface-variant": "#353534",
+                        "secondary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#461f00",
+                        "on-error-container": "#ffdad6",
+                        "on-secondary-container": "#00311f",
+                        "surface-tint": "#adc6ff",
+                        "outline": "#8c909f",
+                        "on-primary-fixed-variant": "#004395"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "fontFamily": {
+                        "headline": ["Inter"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #0e0e0e;
+            color: #e5e2e1;
+            font-family: 'Inter', sans-serif;
+        }
+        .a4-canvas {
+            width: 100%;
+            max-width: 210mm;
+            min-height: 297mm;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #424754;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #353534;
+            border-radius: 10px;
+        }
+
+        /* PDF/Print: render invoice as a clean white A4 document */
+        @page {
+            size: A4;
+            margin: 8mm;
+        }
+        @media print {
+            html, body {
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+
+            main {
+                padding-top: 0 !important;
+                padding-bottom: 0 !important;
+            }
+
+            /* Only the invoice should be visible and it must be white */
+            #invoice {
+                background: #ffffff !important;
+                border: none !important;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+                overflow: visible !important;
+                max-width: none !important;
+                min-height: auto !important;
+                padding: 0 !important;
+            }
+            #invoice, #invoice * {
+                color: #000000 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+            }
+            #invoice * {
+                background: transparent !important;
+            }
+            #invoice * {
+                border-color: rgba(0, 0, 0, 0.15) !important;
+            }
+
+            /* Ensure form values print cleanly */
+            #invoice input,
+            #invoice textarea,
+            #invoice select {
+                color: #000000 !important;
+                -webkit-text-fill-color: #000000 !important;
+            }
+            #invoice input::placeholder,
+            #invoice textarea::placeholder {
+                color: rgba(0, 0, 0, 0.45) !important;
+            }
+
+            /* Hide interactive controls (add/remove/delete/buttons) in the PDF */
+            #invoice button {
+                display: none !important;
+            }
+            /* Hide the last table column ("Supprimer") */
+            #invoice table th:last-child,
+            #invoice table td:last-child {
+                display: none !important;
+            }
+
+            /* Avoid awkward page breaks within rows */
+            #invoice table {
+                page-break-inside: auto;
+            }
+            #invoice tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+        }
+
+        /* PDF generator mode (html2canvas + jsPDF) */
+        .pdf-mode {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+        .pdf-mode #invoice {
+            background: #ffffff !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            max-width: 210mm !important;
+            min-height: auto !important;
+        }
+        .pdf-mode #invoice, .pdf-mode #invoice * {
+            color: #000000 !important;
+            text-shadow: none !important;
+            box-shadow: none !important;
+        }
+        .pdf-mode #invoice * {
+            background: transparent !important;
+            border-color: rgba(0, 0, 0, 0.15) !important;
+        }
+        .pdf-mode #invoice {
+            font-size: 11px;
+            line-height: 1.25;
+        }
+
+        /* Scale down Tailwind text utilities inside the PDF clone */
+        .pdf-mode #invoice .text-5xl { font-size: 2.35rem !important; line-height: 1.08 !important; }
+        .pdf-mode #invoice .text-4xl { font-size: 1.75rem !important; line-height: 1.12 !important; }
+        .pdf-mode #invoice .text-3xl { font-size: 1.45rem !important; line-height: 1.12 !important; }
+        .pdf-mode #invoice .text-2xl { font-size: 1.15rem !important; line-height: 1.1 !important; }
+        .pdf-mode #invoice .text-lg { font-size: 0.95rem !important; }
+        .pdf-mode #invoice .text-base { font-size: 0.9rem !important; }
+        .pdf-mode #invoice .text-sm { font-size: 0.82rem !important; }
+        .pdf-mode #invoice .text-xs { font-size: 0.75rem !important; }
+
+        /* Compact spacing utilities commonly used in the invoice */
+        .pdf-mode #invoice [class~="mb-20"] { margin-bottom: 12mm !important; }
+        .pdf-mode #invoice [class~="mb-16"] { margin-bottom: 8mm !important; }
+        .pdf-mode #invoice [class~="mt-8"] { margin-top: 4mm !important; }
+        .pdf-mode #invoice [class~="gap-16"] { gap: 10mm !important; }
+        .pdf-mode #invoice [class~="gap-12"] { gap: 7mm !important; }
+        .pdf-mode #invoice [class~="gap-8"] { gap: 6mm !important; }
+        .pdf-mode #invoice [class~="space-y-8"] > :not([hidden]) ~ :not([hidden]) { margin-top: 6mm !important; }
+        .pdf-mode #invoice [class~="space-y-6"] > :not([hidden]) ~ :not([hidden]) { margin-top: 5mm !important; }
+        .pdf-mode #invoice [class~="space-y-4"] > :not([hidden]) ~ :not([hidden]) { margin-top: 4mm !important; }
+        .pdf-mode #invoice [class~="space-y-3"] > :not([hidden]) ~ :not([hidden]) { margin-top: 2.5mm !important; }
+
+        .pdf-mode #invoice [class~="p-6"] { padding: 12px !important; }
+        .pdf-mode #invoice [class~="p-4"] { padding: 10px !important; }
+        .pdf-mode #invoice [class~="p-3"] { padding: 6px !important; }
+        .pdf-mode #invoice [class~="py-6"] { padding-top: 8px !important; padding-bottom: 8px !important; }
+        .pdf-mode #invoice [class~="py-2"] { padding-top: 4px !important; padding-bottom: 4px !important; }
+        .pdf-mode #invoice [class~="pt-12"] { padding-top: 6mm !important; }
+
+        /* Reduce signature/stamp blocks height */
+        .pdf-mode #invoice [class~="h-28"] { height: 72px !important; }
+        .pdf-mode #invoice [data-pdf-section="header"] {
+            margin-bottom: 16mm !important;
+        }
+        .pdf-mode #invoice [data-pdf-section="recipient"] {
+            margin-bottom: 12mm !important;
+        }
+        .pdf-mode #invoice [data-pdf-section="items"] {
+            margin-bottom: 10mm !important;
+        }
+        .pdf-mode #invoice [data-pdf-section="totals"] {
+            padding-top: 8mm !important;
+        }
+        .pdf-mode #invoice textarea {
+            line-height: 1.25 !important;
+        }
+        .pdf-mode #invoice .pdf-hide {
+            display: none !important;
+        }
+
+        /* Brand logo behavior */
+        .brand-logo {
+            display: block;
+            width: auto;
+            height: auto;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+        .pdf-mode .brand-logo--invert {
+            /* If we fall back to the white logo in PDF, invert it for white background */
+            filter: invert(1) contrast(1.05);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden custom-scrollbar">
+<!-- Top Navigation Header -->
+<header class="no-print bg-[#131313]/80 backdrop-blur-xl border-b border-outline-variant/10 flex justify-between items-center w-full px-8 h-16 fixed top-0 z-50">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="h-10 w-28 flex items-center justify-center p-1 shrink-0">
+<img class="brand-logo hidden" data-brand-logo data-logo-screen-src="assets/jeeniso-logo.PNG" data-logo-pdf-src="assets/Copy of JEENISo_Logo.PNG" alt="JEENISo" src="assets/jeeniso-logo.PNG" crossorigin="anonymous"/>
+<span class="material-symbols-outlined text-[#002e6a] text-lg" data-logo-fallback style="font-variation-settings: 'FILL' 1;">description</span>
+</div>
+<div>
+<h1 class="text-on-surface font-black tracking-tighter text-lg uppercase leading-none">JEENISo</h1>
+<p class="text-[9px] text-primary font-bold tracking-[0.2em] uppercase leading-none mt-1">Plateforme Facturation</p>
+</div>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant/20 mx-2"></div>
+<nav class="flex gap-4">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest" href="#">Tableau de bord</a>
+<a class="text-primary text-[10px] font-bold uppercase tracking-widest border-b-2 border-primary pb-5 -mb-5" href="code.html">Nouvelle Facture</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-[10px] font-bold uppercase tracking-widest" href="archive.html">Archives</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full overflow-hidden border border-primary/20 ml-2">
+<img alt="User" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBouf2Yw5C0GYV0Zzexm2DPwWsVVA1mI7TNNTr-sYH2i3Srh0mhrD9Wnbzpxo46nJv29AD7o5EnfAzvQwYq84Yv2Wd3d_MJPWvAeLP8rlAwX8P6V1YsI0-udJVxRzvL5BUPCvB95zT260CZl8zgBy7WuPcF7esDEVLTw39dbaDNPYHJPKaHaXdCkJzxrVQ7LUx5HCIdknAS5IfSOdFUdtBBz4FoNVfCvdNM7cMF7yHEJ9IOlCOXdEzUXSWgvrzxijJe1-7dj5kJlaQ"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="w-full pt-28 pb-20 px-4 md:px-8">
+<div class="max-w-7xl mx-auto">
+<!-- Top Actions Section -->
+<div class="no-print flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-sm">edit_document</span>
+<span class="text-primary text-[10px] font-black tracking-[0.2em] uppercase">Éditeur de Facturation</span>
+</div>
+<h2 class="text-4xl font-black tracking-tight text-on-surface">Nouvelle Facture</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="px-6 py-2.5 bg-surface-container-high hover:bg-surface-container-highest text-on-surface rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2" type="button" data-action="save-draft">
+<span class="material-symbols-outlined text-lg">save</span>
+                        <span data-save-label>Enregistrer Brouillon</span>
+                    </button>
+<button class="px-6 py-2.5 bg-gradient-to-br from-[#ADC6FF] to-[#4D8EFF] text-[#002e6a] rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 shadow-xl shadow-primary/10 group" data-action="download-pdf" type="button">
+<span class="material-symbols-outlined text-lg group-hover:scale-110 transition-transform">picture_as_pdf</span>
+                        Générer &amp; Télécharger
+                    </button>
+</div>
+</div>
+<!-- Centralized Interface Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+<!-- Center: The Invoice Paper -->
+<div class="xl:col-span-9 order-2 xl:order-1">
+<div class="a4-canvas bg-surface-container-low mx-auto p-8 md:p-16 rounded-2xl shadow-2xl relative overflow-hidden border border-outline-variant/10" id="invoice" aria-label="Facture">
+<!-- Abstract Design Element -->
+<div class="absolute -top-32 -right-32 w-80 h-80 bg-primary/5 rounded-full blur-[120px] pdf-hide pointer-events-none"></div>
+<!-- Invoice Header -->
+<div class="flex flex-col md:flex-row justify-between items-start mb-20 gap-8" data-pdf-section="header">
+<div class="space-y-6">
+<div class="flex items-center gap-3 mb-4">
+<div class="h-14 w-40 flex items-center justify-center p-1 shrink-0">
+<img class="brand-logo hidden" data-brand-logo data-logo-screen-src="assets/jeeniso-logo.PNG" data-logo-pdf-src="assets/Copy of JEENISo_Logo.PNG" alt="JEENISo" src="assets/jeeniso-logo.PNG" crossorigin="anonymous"/>
+<span class="material-symbols-outlined text-[#002e6a] text-3xl" data-logo-fallback style="font-variation-settings: 'FILL' 1;">description</span>
+</div>
+<h3 class="text-3xl font-black tracking-tighter text-on-surface">JEENISo</h3>
+</div>
+<div class="space-y-4 max-w-sm">
+<div class="p-4 bg-surface-container-lowest/50 rounded-xl border border-outline-variant/5">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-2">Émetteur</p>
+<div class="space-y-1">
+<input class="w-full bg-transparent border-none p-0 text-sm font-bold text-on-surface focus:ring-0" id="issuerName" value="JEENISo France SAS"/>
+<textarea class="w-full bg-transparent border-none p-0 text-xs text-on-surface-variant focus:ring-0 resize-none leading-relaxed" id="issuerDetails" rows="3">128 Rue de la Technologie, 75008 Paris, France
+SIRET: 842 930 112 00045
+TVA Intra: FR 93 842930112</textarea>
+<input class="w-full bg-transparent border-none p-0 text-xs text-primary font-medium focus:ring-0" id="issuerEmail" value="contact@jeeniso.com"/>
+</div>
+</div>
+</div>
+</div>
+<div class="text-right space-y-6 self-start flex flex-col items-end">
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Référence Facture</p>
+<div class="flex items-center justify-end">
+<input class="w-40 bg-transparent border-none p-0 text-3xl font-mono font-black text-on-surface focus:ring-0 text-right tracking-tighter uppercase" id="invoiceRefPrefix" type="text" value="FAC-2024-" aria-label="Préfixe référence facture"/>
+<input class="w-20 bg-transparent border-none p-0 text-3xl font-mono font-black text-on-surface focus:ring-0 text-right" id="invoiceRefNumber" type="text" value="001" aria-label="Numéro facture"/>
+</div>
+</div>
+<div class="space-y-1">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Date d'émission</p>
+<input class="bg-transparent border-none p-0 text-on-surface text-base font-semibold focus:ring-0 text-right cursor-pointer" id="issueDate" type="date" value="2024-05-24"/>
+</div>
+</div>
+</div>
+<!-- Recipient Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20" data-pdf-section="recipient">
+<div class="space-y-4 p-6 rounded-2xl bg-[#1C1B1B] border border-outline-variant/5 hover:border-primary/20 transition-colors group">
+<div class="flex justify-between items-center">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Facturer à</p>
+<span class="material-symbols-outlined text-xs text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">person_search</span>
+</div>
+<div class="space-y-3">
+<input class="w-full bg-transparent border-none p-0 text-lg font-black text-on-surface placeholder-outline-variant/50 focus:ring-0 tracking-tight" id="clientName" placeholder="Nom du Client ou Société" type="text"/>
+<textarea class="w-full bg-transparent border-none p-0 text-sm text-on-surface-variant placeholder-outline-variant/50 focus:ring-0 resize-none leading-relaxed" id="clientAddress" placeholder="Adresse complète &amp; Coordonnées" rows="3"></textarea>
+<div class="flex items-center gap-2 pt-2 border-t border-outline-variant/5">
+<span class="text-[9px] text-on-surface-variant uppercase font-bold">ID Fiscal:</span>
+<input class="bg-transparent border-none p-0 text-[11px] text-on-surface font-mono focus:ring-0 placeholder-outline-variant/30" id="clientFiscalId" placeholder="FR 00 000000000" type="text"/>
+</div>
+</div>
+</div>
+<div class="space-y-4 p-6 border border-outline-variant/10 rounded-2xl">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Informations Paiement</p>
+<div class="space-y-4">
+<div class="flex flex-col gap-1">
+<label class="text-[10px] text-on-surface-variant/70 uppercase font-bold">Échéance</label>
+<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 font-medium cursor-pointer" id="dueDate" type="date" value="2024-06-24"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="text-[10px] text-on-surface-variant/70 uppercase font-bold">Référence Projet</label>
+<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 font-medium" id="projectRef" placeholder="Ex: Ref-24-X-01" type="text"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Dynamic Table -->
+<div class="mb-16" data-pdf-section="items">
+<div class="overflow-x-auto">
+<table class="w-full text-left min-w-[600px]">
+<thead>
+<tr class="border-b border-outline-variant/20">
+<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest">Description</th>
+<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-center w-20">Qté</th>
+<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-right w-36">Prix Unit. HT</th>
+<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-right w-24">TVA</th>
+<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-right w-32">Total HT</th>
+<th class="pb-5 w-10">Supprimer</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/5" id="itemsBody">
+<!-- Row 1 -->
+<tr class="group">
+<td class="py-6">
+<input class="w-full bg-transparent border-none p-0 text-sm font-semibold text-on-surface focus:ring-0 placeholder-on-surface-variant/20" placeholder="Nom de la prestation..." type="text" value="Conception UI/UX - Application Mobile"/>
+</td>
+<td class="py-6 text-center"><div class="flex items-center justify-center gap-2">
+<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-decrease" type="button">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<input class="w-10 bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-center font-mono font-bold" type="number" value="1" min="1" step="1"/>
+<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-increase" type="button">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div></td>
+<td class="py-6 text-right">
+<div class="flex items-center justify-end">
+<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-right tabular-nums font-mono" type="text" value="3,200.00"/>
+<span class="ml-1 text-on-surface-variant text-xs font-semibold" data-currency-symbol>€</span>
+</div>
+</td>
+<td class="py-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<input class="w-16 bg-transparent border-none p-0 text-xs font-bold text-on-surface-variant focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="20" list="vatRates" aria-label="TVA (%)"/>
+<span class="text-on-surface-variant text-xs font-semibold">%</span>
+</div>
+</td>
+<td class="py-6 text-right tabular-nums text-sm font-bold text-on-surface tracking-tight">3,200.00 €</td>
+<td class="py-6 text-right"><button class="text-error/60 hover:text-error transition-all hover:scale-110" data-action="row-delete" type="button">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button></td>
+</tr>
+<!-- Row 2 -->
+<tr class="group">
+<td class="py-6">
+<input class="w-full bg-transparent border-none p-0 text-sm font-semibold text-on-surface focus:ring-0 placeholder-on-surface-variant/20" placeholder="Nom de la prestation..." type="text" value="Maintenance trimestrielle Serveurs"/>
+</td>
+<td class="py-6 text-center"><div class="flex items-center justify-center gap-2">
+<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-decrease" type="button">
+<span class="material-symbols-outlined text-sm">remove</span>
+</button>
+<input class="w-10 bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-center font-mono font-bold" type="number" value="3" min="1" step="1"/>
+<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-increase" type="button">
+<span class="material-symbols-outlined text-sm">add</span>
+</button>
+</div></td>
+<td class="py-6 text-right">
+<div class="flex items-center justify-end">
+<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-right tabular-nums font-mono" type="text" value="450.00"/>
+<span class="ml-1 text-on-surface-variant text-xs font-semibold" data-currency-symbol>€</span>
+</div>
+</td>
+<td class="py-6 text-right">
+<div class="flex items-center justify-end gap-1">
+<input class="w-16 bg-transparent border-none p-0 text-xs font-bold text-on-surface-variant focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="20" list="vatRates" aria-label="TVA (%)"/>
+<span class="text-on-surface-variant text-xs font-semibold">%</span>
+</div>
+</td>
+<td class="py-6 text-right tabular-nums text-sm font-bold text-on-surface tracking-tight">1,350.00 €</td>
+<td class="py-6 text-right"><button class="text-error/60 hover:text-error transition-all hover:scale-110" data-action="row-delete" type="button">
+<span class="material-symbols-outlined text-lg">delete</span>
+</button></td>
+</tr>
+</tbody>
+</table>
+</div>
+<datalist id="vatRates">
+    <option value="0"></option>
+    <option value="5.5"></option>
+    <option value="10"></option>
+    <option value="18"></option>
+    <option value="20"></option>
+</datalist>
+
+<div class="pdf-hide mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
+    <button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed border-outline-variant/30 text-[10px] font-black text-secondary uppercase tracking-[0.2em] hover:bg-secondary/5 hover:border-secondary transition-all group" type="button" data-action="add-item">
+<span class="material-symbols-outlined text-base group-hover:rotate-90 transition-transform">add</span>
+                                Ajouter un article
+    </button>
+
+    <label class="flex items-center justify-between gap-3 px-4 py-2 rounded-lg bg-surface-container-lowest/20 border border-outline-variant/10">
+        <span class="text-[10px] font-black text-primary uppercase tracking-widest">TVA par défaut</span>
+        <div class="flex items-center gap-1">
+            <input id="defaultVatRate" class="w-16 bg-transparent border-none p-0 text-xs font-bold text-on-surface focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="18" list="vatRates" aria-label="TVA par défaut (%)"/>
+            <span class="text-on-surface-variant text-xs font-semibold">%</span>
+        </div>
+    </label>
+
+    <label class="flex items-center gap-3 px-4 py-2 rounded-lg bg-surface-container-lowest/20 border border-outline-variant/10">
+        <input id="regimeSuspensif" type="checkbox" class="h-4 w-4 rounded border-outline-variant/30 bg-transparent text-primary focus:ring-primary/30" aria-label="Régime suspensif"/>
+        <span class="text-[10px] font-black text-primary uppercase tracking-widest">Régime suspensif</span>
+    </label>
+</div>
+</div>
+<!-- Footer/Totals -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t border-outline-variant/10" data-pdf-section="totals">
+<div class="space-y-8">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-3">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Signature Client</p>
+<div class="h-28 w-full bg-surface-container-lowest/30 rounded-xl border-2 border-dashed border-outline-variant/10 flex flex-col items-center justify-center group cursor-pointer hover:border-primary/30 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined text-outline-variant/50 text-3xl group-hover:text-primary transition-colors">draw</span>
+<span class="text-[9px] text-on-surface-variant mt-2 font-semibold">Cliquer pour signer</span>
+</div>
+</div>
+<div class="space-y-3">
+<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cachet JEENISo</p>
+<div class="h-28 w-full bg-surface-container-lowest/30 rounded-xl border-2 border-dashed border-outline-variant/10 flex items-center justify-center relative">
+<div class="w-16 h-16 rounded-full border-2 border-primary/10 flex items-center justify-center opacity-30 rotate-12">
+<span class="text-[7px] font-black uppercase text-primary text-center">JEENISo<br/>OFFICIEL</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-4 bg-surface-container-lowest/30 rounded-xl border border-outline-variant/5">
+<p class="text-[9px] text-on-surface-variant font-medium leading-relaxed italic">
+                                        * Modalités : Paiement exigible sous 30 jours à réception. En cas de retard, une pénalité de 3 fois le taux d'intérêt légal ainsi qu'une indemnité forfaitaire de 40€ pour frais de recouvrement seront appliquées.
+                                    </p>
+</div>
+</div>
+<div class="space-y-1">
+<div class="flex justify-between items-center py-2 px-1">
+<span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest">Total Hors Taxes</span>
+<span class="text-lg font-mono font-bold text-on-surface tabular-nums" id="totalHt">4,550.00 €</span>
+</div>
+<div class="flex justify-between items-center py-2 px-1">
+<span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest" id="vatLabel">TVA (20%)</span>
+<span class="text-lg font-mono font-bold text-on-surface tabular-nums" id="totalVat">910.00 €</span>
+</div>
+<div class="flex justify-between items-center py-2 px-1 hidden" id="withholdingRow">
+<span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest" id="withholdingLabel">Retenue (0%)</span>
+<span class="text-lg font-mono font-bold text-on-surface tabular-nums" id="withholdingAmount">0.00 €</span>
+</div>
+<div class="my-4 h-px bg-gradient-to-r from-transparent via-outline-variant/20 to-transparent"></div>
+<div class="flex flex-col items-end pt-4">
+<span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Total TTC À Payer</span>
+<div class="flex items-baseline gap-2">
+<span class="text-5xl font-black text-on-surface tracking-tighter tabular-nums" id="totalTtc">5,460.00</span>
+<span class="text-2xl font-black text-primary" data-currency-symbol>€</span>
+</div>
+<div class="mt-2 flex justify-between items-center w-full max-w-[18rem] hidden" id="netToPayRow">
+    <span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest">Net à payer après retenue</span>
+    <span class="text-[11px] font-mono font-bold text-on-surface tabular-nums" id="netToPay">0.00 €</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: Summary Sidebar & Controls -->
+<div class="no-print xl:col-span-3 order-1 xl:order-2 space-y-6">
+<!-- Dashboard Snapshot Card -->
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 shadow-lg">
+<div class="flex items-center justify-between mb-6">
+<p class="text-[10px] font-black text-primary uppercase tracking-widest">Synthèse Directe</p>
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+</div>
+<div class="space-y-6">
+<div>
+<div class="flex justify-between text-[11px] mb-2">
+<span class="text-on-surface-variant font-medium">Validité des données</span>
+<span class="text-secondary font-bold">100%</span>
+</div>
+<div class="w-full h-1.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="w-full h-full bg-secondary shadow-[0_0_8px_rgba(78,222,163,0.5)]"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-[#1C1B1B] p-3 rounded-xl border border-outline-variant/5">
+<p class="text-[8px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Articles</p>
+<p class="text-lg font-black text-on-surface" id="articlesCount">02</p>
+</div>
+<div class="bg-[#1C1B1B] p-3 rounded-xl border border-outline-variant/5">
+<p class="text-[8px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Echéance</p>
+<p class="text-lg font-black text-on-surface">30j</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Config Panel -->
+<div class="bg-surface-container-low p-6 rounded-2xl border border-outline-variant/10 shadow-lg">
+<p class="text-[10px] font-black text-primary uppercase tracking-widest mb-6">Options d'export</p>
+<div class="space-y-3">
+<label class="flex items-center justify-between p-3 rounded-xl bg-[#1C1B1B] border border-outline-variant/10 cursor-pointer hover:border-primary/50 transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">language</span>
+<span class="text-xs font-bold text-on-surface">Langue PDF</span>
+</div>
+<span class="text-[10px] font-black text-on-surface-variant uppercase">Français</span>
+</label>
+<label class="flex items-center justify-between p-3 rounded-xl bg-[#1C1B1B] border border-outline-variant/10 cursor-pointer hover:border-primary/50 transition-colors group">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-xl">payments</span>
+<span class="text-xs font-bold text-on-surface">Devise</span>
+</div>
+<select id="currencyCode" class="bg-transparent border-none p-0 text-[10px] font-black text-on-surface-variant uppercase focus:ring-0 text-right cursor-pointer">
+    <option value="EUR">EUR (€)</option>
+    <option value="TND" selected>TND (DT)</option>
+    <option value="USD">USD ($)</option>
+</select>
+</label>
+
+<div class="p-3 rounded-xl bg-[#1C1B1B] border border-outline-variant/10 hover:border-primary/50 transition-colors">
+    <div class="flex items-center gap-3 mb-3">
+        <span class="material-symbols-outlined text-primary text-xl">percent</span>
+        <div class="flex-1">
+            <p class="text-xs font-bold text-on-surface">Retenue à la source</p>
+            <p class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Catalogue</p>
+        </div>
+    </div>
+
+    <div class="space-y-2">
+        <select id="withholdingType" class="w-full bg-transparent border border-outline-variant/10 rounded-lg px-2 py-2 text-[11px] text-on-surface focus:ring-1 focus:ring-primary/20">
+            <option value="none" selected>Aucune</option>
+            <option value="acq_1000">Acquisitions ≥ 1000 D TTC</option>
+            <option value="honoraires_reel">Honoraires (régime réel)</option>
+            <option value="hotel_space">Location espace d'hôtel</option>
+            <option value="loyers">Loyers immeubles</option>
+            <option value="honoraires_forfaitaire">Honoraires (IR forfaitaire)</option>
+        </select>
+
+        <select id="withholdingProfile" class="w-full bg-transparent border border-outline-variant/10 rounded-lg px-2 py-2 text-[11px] text-on-surface focus:ring-1 focus:ring-primary/20 hidden">
+            <option value="is35_or_pp_bareme" selected>IS 35% / PP barème</option>
+            <option value="is15">IS 15%</option>
+            <option value="is10_or_pp_2_3">IS 10% / PP (déduction 2/3)</option>
+        </select>
+
+        <div class="flex items-center justify-between px-1 pt-1">
+            <span class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Taux</span>
+            <span class="text-[11px] font-mono font-bold text-on-surface tabular-nums" id="withholdingRateDisplay">0%</span>
+            <input id="withholdingRate" type="hidden" value="0" />
+        </div>
+    </div>
+</div>
+<button class="w-full flex items-center justify-between p-4 mt-4 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all group" data-action="preview-pdf" type="button">
+<span class="text-xs font-black uppercase tracking-widest">Visualiser PDF</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">visibility</span>
+</button>
+</div>
+</div>
+<!-- Integration Info -->
+<div class="bg-gradient-to-br from-tertiary-container/20 to-tertiary-container/5 p-6 rounded-2xl border border-tertiary-container/10">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary">bolt</span>
+<div>
+<p class="text-xs font-black text-on-surface uppercase tracking-widest mb-1">Smart Engine</p>
+<p class="text-[11px] text-on-surface-variant leading-relaxed">
+                                    Les calculs sont effectués en temps réel via notre moteur certifié. L'export PDF respecte la norme <span class="text-tertiary font-mono">ZUGFeRD</span>.
+                                </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="no-print w-full py-8 border-t border-outline-variant/10 mt-10">
+<div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-on-surface-variant/50">
+<p class="text-[10px] font-bold uppercase tracking-widest">© 2024 JEENISo - Système de gestion intelligent</p>
+<div class="flex gap-6">
+<a class="text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Support</a>
+<a class="text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Confidentialité</a>
+<a class="text-[10px] font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">API</a>
+</div>
+</div>
+</footer>
+
+<!-- PDF Preview Modal (in-page overlay) -->
+<div class="no-print fixed inset-0 z-[100] hidden" id="pdfPreviewModal" aria-hidden="true">
+    <div class="absolute inset-0 bg-surface-dim/80 backdrop-blur-sm" data-action="close-pdf-modal"></div>
+    <div class="absolute inset-0 p-4 md:p-8 flex items-center justify-center">
+        <div class="w-full max-w-5xl h-[85vh] bg-surface-container-high border border-outline-variant/20 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 bg-surface-container-low border-b border-outline-variant/10">
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-lg">picture_as_pdf</span>
+                    <p class="text-[10px] font-black text-primary uppercase tracking-widest">Aperçu PDF</p>
+                    <p class="text-[11px] text-on-surface-variant/70 font-medium" id="pdfPreviewName"></p>
+                </div>
+                <button class="w-9 h-9 rounded-full hover:bg-surface-container-highest flex items-center justify-center text-on-surface" type="button" data-action="close-pdf-modal" aria-label="Fermer">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="flex-1 bg-white">
+                <iframe id="pdfPreviewFrame" title="Aperçu PDF" class="w-full h-full" style="border:0" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+        (function () {
+            const logos = document.querySelectorAll('img[data-brand-logo]');
+            const fallbacks = document.querySelectorAll('[data-logo-fallback]');
+            if (!logos.length) return;
+
+            const showLogosHideFallbacks = () => {
+                logos.forEach((img) => img.classList.remove('hidden'));
+                fallbacks.forEach((el) => el.classList.add('hidden'));
+            };
+
+            let activated = false;
+            const tryActivateIfLoaded = () => {
+                if (activated) return;
+                const anyLoaded = Array.from(logos).some((img) => img.complete && img.naturalWidth > 0);
+                if (anyLoaded) {
+                    activated = true;
+                    showLogosHideFallbacks();
+                }
+            };
+
+            logos.forEach((img) => {
+                img.addEventListener('load', () => {
+                    tryActivateIfLoaded();
+                });
+                img.addEventListener('error', () => {
+                    // Keep fallbacks visible if the logo file is missing
+                    img.classList.add('hidden');
+                });
+            });
+
+            // Handle cached images where 'load' may not fire
+            tryActivateIfLoaded();
+        })();
+
+        (async function () {
+            const STORAGE_KEY = 'jeeniso_invoices_v1';
+
+            const readInvoicesFromDisk = async () => {
+                try {
+                    const res = await fetch('/api/invoices', { cache: 'no-store' });
+                    if (!res.ok) return null;
+                    const data = await res.json();
+                    return Array.isArray(data) ? data : null;
+                } catch {
+                    return null;
+                }
+            };
+
+            const writeInvoicesToDisk = async (arr) => {
+                try {
+                    await fetch('/api/invoices', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(Array.isArray(arr) ? arr : []),
+                    });
+                } catch {
+                    // ignore (server not running)
+                }
+            };
+
+            const getQueryParam = (name) => {
+                try {
+                    return new URLSearchParams(window.location.search).get(name);
+                } catch {
+                    return null;
+                }
+            };
+
+            const generateId = () => {
+                if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+                return 'inv_' + Math.random().toString(16).slice(2) + '_' + Date.now();
+            };
+
+            const readInvoices = () => {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    const arr = raw ? JSON.parse(raw) : [];
+                    return Array.isArray(arr) ? arr : [];
+                } catch {
+                    return [];
+                }
+            };
+
+            const writeInvoices = (arr) => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(arr));
+                // Mirror to disk if the local server is running
+                void writeInvoicesToDisk(arr);
+            };
+
+            const hydrateInvoices = async () => {
+                const disk = await readInvoicesFromDisk();
+                if (!disk) return;
+                // Always hydrate localStorage from disk as the source of truth for persistence.
+                writeInvoices(disk);
+            };
+
+            const getElValue = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return '';
+                if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) return el.value;
+                return '';
+            };
+
+            const setElValue = (id, value) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement || el instanceof HTMLSelectElement) {
+                    el.value = value ?? '';
+                }
+            };
+
+            const getElChecked = (id) => {
+                const el = document.getElementById(id);
+                if (!el) return false;
+                if (el instanceof HTMLInputElement && el.type === 'checkbox') return Boolean(el.checked);
+                return false;
+            };
+
+            const setElChecked = (id, checked) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (el instanceof HTMLInputElement && el.type === 'checkbox') el.checked = Boolean(checked);
+            };
+
+            const parseMoney = (raw) => {
+                if (raw == null) return 0;
+                let str = String(raw)
+                    .replace(/\u00A0|\u202F/g, ' ') // nbsp / narrow nbsp
+                    .trim();
+
+                str = str.replace(/[^0-9,\.\-\s]/g, '').replace(/\s+/g, '');
+                if (!str) return 0;
+
+                const hasComma = str.includes(',');
+                const hasDot = str.includes('.');
+
+                if (hasComma && hasDot) {
+                    const lastComma = str.lastIndexOf(',');
+                    const lastDot = str.lastIndexOf('.');
+                    const decimalIsComma = lastComma > lastDot;
+
+                    if (decimalIsComma) {
+                        str = str.replace(/\./g, '');
+                        str = str.replace(/,/g, '.');
+                    } else {
+                        str = str.replace(/,/g, '');
+                    }
+                } else if (hasComma && !hasDot) {
+                    str = str.replace(/,/g, '.');
+                }
+
+                const value = Number(str);
+                return Number.isFinite(value) ? value : 0;
+            };
+
+            const collectItems = () => {
+                const body = document.getElementById('itemsBody');
+                if (!body) return [];
+                return Array.from(body.querySelectorAll('tr')).map((tr) => {
+                    const desc = tr.querySelector('td:nth-child(1) input')?.value ?? '';
+                    const qty = Number(tr.querySelector('td:nth-child(2) input[type="number"]')?.value ?? 1);
+                    const unit = tr.querySelector('td:nth-child(3) input')?.value ?? '0.00';
+                    const vat = Number(tr.querySelector('td:nth-child(4) input[type="number"]')?.value ?? 0);
+                    return {
+                        description: desc,
+                        quantity: Number.isFinite(qty) ? qty : 1,
+                        unitPriceHt: unit,
+                        vatRate: Number.isFinite(vat) ? vat : 0,
+                    };
+                });
+            };
+
+            const applyItems = (items) => {
+                const body = document.getElementById('itemsBody');
+                if (!body) return;
+                const template = body.querySelector('tr');
+                if (!template) return;
+
+                body.innerHTML = '';
+                const safeItems = Array.isArray(items) && items.length ? items : [{ description: '', quantity: 1, unitPriceHt: '0.00', vatRate: 0 }];
+
+                safeItems.forEach((it) => {
+                    const row = template.cloneNode(true);
+                    const descEl = row.querySelector('td:nth-child(1) input');
+                    const qtyEl = row.querySelector('td:nth-child(2) input[type="number"]');
+                    const unitEl = row.querySelector('td:nth-child(3) input');
+                    const vatEl = row.querySelector('td:nth-child(4) input[type="number"]');
+
+                    if (descEl) descEl.value = it.description ?? '';
+                    if (qtyEl) qtyEl.value = String(it.quantity ?? 1);
+                    if (unitEl) unitEl.value = it.unitPriceHt ?? '0.00';
+                    if (vatEl) vatEl.value = String(it.vatRate ?? 0);
+
+                    body.appendChild(row);
+                });
+            };
+
+            const collectInvoice = () => {
+                const currencyCode = getElValue('currencyCode') || 'TND';
+                const ht = parseMoney(document.getElementById('totalHt')?.textContent ?? '');
+                const vat = parseMoney(document.getElementById('totalVat')?.textContent ?? '');
+                const ttc = parseMoney(document.getElementById('totalTtc')?.textContent ?? '');
+                return {
+                    id: window.__invoiceId || null,
+                    currencyCode,
+                    referencePrefix: getElValue('invoiceRefPrefix'),
+                    referenceNumber: getElValue('invoiceRefNumber'),
+                    issueDate: getElValue('issueDate'),
+                    dueDate: getElValue('dueDate'),
+                    projectRef: getElValue('projectRef'),
+                    issuerName: getElValue('issuerName'),
+                    issuerDetails: getElValue('issuerDetails'),
+                    issuerEmail: getElValue('issuerEmail'),
+                    clientName: getElValue('clientName'),
+                    clientAddress: getElValue('clientAddress'),
+                    clientFiscalId: getElValue('clientFiscalId'),
+                    defaultVatRate: getElValue('defaultVatRate'),
+                    regimeSuspensif: getElChecked('regimeSuspensif'),
+                    withholding: {
+                        type: getElValue('withholdingType') || 'none',
+                        profile: getElValue('withholdingProfile') || 'is35_or_pp_bareme',
+                        rate: Number(getElValue('withholdingRate') || 0),
+                    },
+                    items: collectItems(),
+                    totals: {
+                        ht: document.getElementById('totalHt')?.textContent ?? '',
+                        vat: document.getElementById('totalVat')?.textContent ?? '',
+                        ttc: document.getElementById('totalTtc')?.textContent ?? '',
+                    },
+                    totalsNumeric: { ht, vat, ttc },
+                };
+            };
+
+            const applyInvoice = (inv) => {
+                setElValue('currencyCode', inv.currencyCode ?? 'TND');
+                setElValue('invoiceRefPrefix', inv.referencePrefix ?? '');
+                setElValue('invoiceRefNumber', inv.referenceNumber ?? '');
+                setElValue('issueDate', inv.issueDate ?? '');
+                setElValue('dueDate', inv.dueDate ?? '');
+                setElValue('projectRef', inv.projectRef ?? '');
+
+                setElValue('issuerName', inv.issuerName ?? '');
+                setElValue('issuerDetails', inv.issuerDetails ?? '');
+                setElValue('issuerEmail', inv.issuerEmail ?? '');
+
+                setElValue('clientName', inv.clientName ?? '');
+                setElValue('clientAddress', inv.clientAddress ?? '');
+                setElValue('clientFiscalId', inv.clientFiscalId ?? '');
+
+                setElValue('defaultVatRate', inv.defaultVatRate ?? '');
+                setElChecked('regimeSuspensif', Boolean(inv.regimeSuspensif));
+
+                if (inv.withholding) {
+                    setElValue('withholdingType', inv.withholding.type ?? 'none');
+                    setElValue('withholdingProfile', inv.withholding.profile ?? 'is35_or_pp_bareme');
+                    setElValue('withholdingRate', String(inv.withholding.rate ?? 0));
+                }
+
+                applyItems(inv.items);
+
+                // Enforce TVA=0 when regime suspensif is enabled
+                const rs = document.getElementById('regimeSuspensif');
+                if (rs) rs.dispatchEvent(new Event('change', { bubbles: true }));
+
+                const wh = document.getElementById('withholdingType');
+                if (wh) wh.dispatchEvent(new Event('change', { bubbles: true }));
+
+                // Trigger recalculation by dispatching an input event on items body
+                const itemsBody = document.getElementById('itemsBody');
+                if (itemsBody) {
+                    itemsBody.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            };
+
+            const saveInvoice = () => {
+                const now = new Date().toISOString();
+                const draft = collectInvoice();
+                const invoices = readInvoices();
+
+                let id = draft.id;
+                if (!id) {
+                    id = generateId();
+                    window.__invoiceId = id;
+                    draft.id = id;
+                }
+
+                const existingIndex = invoices.findIndex((x) => x && x.id === id);
+                const record = {
+                    ...draft,
+                    id,
+                    updatedAt: now,
+                    createdAt: existingIndex >= 0 ? (invoices[existingIndex].createdAt || now) : now,
+                };
+
+                if (existingIndex >= 0) invoices[existingIndex] = record;
+                else invoices.unshift(record);
+
+                writeInvoices(invoices);
+                return record;
+            };
+
+            // Save draft button (bind immediately; don't block on disk hydration)
+            const saveBtn = document.querySelector('[data-action="save-draft"]');
+            const saveLabel = saveBtn?.querySelector('[data-save-label]');
+            const originalLabel = saveLabel?.textContent || '';
+
+            if (saveBtn) {
+                saveBtn.addEventListener('click', () => {
+                    try {
+                        saveInvoice();
+                        if (saveLabel) saveLabel.textContent = 'Enregistré';
+                        saveBtn.disabled = true;
+                        window.setTimeout(() => {
+                            saveBtn.disabled = false;
+                            if (saveLabel) saveLabel.textContent = originalLabel || 'Enregistrer Brouillon';
+                        }, 1200);
+                    } catch {
+                        // As a last resort, show a simple message if something unexpected happens
+                        alert('Impossible d\'enregistrer le brouillon.');
+                    }
+                });
+            }
+
+            // Expose saveInvoice for PDF generator to call
+            window.__saveInvoiceDraft = saveInvoice;
+
+            // Hydrate from disk (if server is running) then load invoice by query param
+            await hydrateInvoices();
+
+            // Load invoice if invoiceId query param is present
+            const invoiceId = getQueryParam('invoiceId');
+            if (invoiceId) {
+                window.__invoiceId = invoiceId;
+                const invoices = readInvoices();
+                const inv = invoices.find((x) => x && x.id === invoiceId);
+                if (inv) applyInvoice(inv);
+            }
+        })();
+
+        (function () {
+            const downloadButtons = document.querySelectorAll('[data-action="download-pdf"]');
+            const previewButtons = document.querySelectorAll('[data-action="preview-pdf"]');
+            const invoice = document.getElementById('invoice');
+            const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+            const pdfPreviewFrame = document.getElementById('pdfPreviewFrame');
+            const pdfPreviewName = document.getElementById('pdfPreviewName');
+            if ((!downloadButtons.length && !previewButtons.length) || !invoice) return;
+
+            let activePreviewUrl = null;
+
+            const openPdfModal = (url, filename) => {
+                if (!pdfPreviewModal || !pdfPreviewFrame) {
+                    window.open(url, '_blank');
+                    return;
+                }
+                activePreviewUrl = url;
+                if (pdfPreviewName) pdfPreviewName.textContent = filename;
+                pdfPreviewFrame.src = url;
+                pdfPreviewModal.classList.remove('hidden');
+                pdfPreviewModal.setAttribute('aria-hidden', 'false');
+            };
+
+            const closePdfModal = () => {
+                if (!pdfPreviewModal || !pdfPreviewFrame) return;
+                pdfPreviewModal.classList.add('hidden');
+                pdfPreviewModal.setAttribute('aria-hidden', 'true');
+                pdfPreviewFrame.src = 'about:blank';
+                if (activePreviewUrl) {
+                    try {
+                        URL.revokeObjectURL(activePreviewUrl);
+                    } catch {
+                        // ignore
+                    }
+                    activePreviewUrl = null;
+                }
+            };
+
+            // Close modal on backdrop, close button, or ESC
+            document.addEventListener('click', (e) => {
+                const el = e.target;
+                if (!(el instanceof Element)) return;
+                const action = el.closest('[data-action]')?.getAttribute('data-action');
+                if (action === 'close-pdf-modal') closePdfModal();
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePdfModal();
+            });
+
+            const getInvoiceFileName = () => {
+                const prefixInput = document.getElementById('invoiceRefPrefix');
+                const numberInput = document.getElementById('invoiceRefNumber');
+
+                const prefixText = (prefixInput?.value || 'FACTURE-').trim();
+                const numberText = (numberInput?.value || '').trim();
+
+                const safe = (prefixText + numberText)
+                    .replace(/\s+/g, '')
+                    .replace(/[^a-zA-Z0-9\-_.]/g, '');
+                return (safe || 'facture') + '.pdf';
+            };
+
+            const replaceFormFieldsWithText = (root) => {
+                root.querySelectorAll('input, textarea, select').forEach((el) => {
+                    const tag = el.tagName.toLowerCase();
+                    const text = tag === 'select'
+                        ? (el.options[el.selectedIndex]?.text || '')
+                        : (el.value || el.getAttribute('value') || '');
+
+                    const span = document.createElement(tag === 'textarea' ? 'div' : 'span');
+                    span.textContent = text;
+                    span.style.whiteSpace = (tag === 'textarea') ? 'pre-wrap' : 'pre';
+                    span.style.display = (tag === 'textarea') ? 'block' : 'inline-block';
+                    span.style.width = (tag === 'textarea') ? '100%' : '';
+                    span.style.font = getComputedStyle(el).font;
+                    span.style.letterSpacing = getComputedStyle(el).letterSpacing;
+                    span.style.textAlign = getComputedStyle(el).textAlign;
+                    span.style.color = '#000';
+                    el.replaceWith(span);
+                });
+            };
+
+            const stripInteractiveElements = (root) => {
+                root.querySelectorAll('button, .pdf-hide, .no-print').forEach((el) => el.remove());
+                root.querySelectorAll('table tr').forEach((tr) => {
+                    const cells = tr.querySelectorAll('th, td');
+                    if (cells.length) {
+                        const last = cells[cells.length - 1];
+                        // "Supprimer" column or action cell
+                        if (last.querySelector('span.material-symbols-outlined') || (last.textContent || '').toLowerCase().includes('supprimer')) {
+                            last.remove();
+                        }
+                    }
+                });
+            };
+
+            const waitForImage = (img, timeoutMs = 1200) => new Promise((resolve) => {
+                if (!(img instanceof HTMLImageElement)) return resolve();
+                if (img.complete) return resolve();
+
+                let done = false;
+                const finish = () => {
+                    if (done) return;
+                    done = true;
+                    img.removeEventListener('load', finish);
+                    img.removeEventListener('error', finish);
+                    resolve();
+                };
+
+                img.addEventListener('load', finish, { once: true });
+                img.addEventListener('error', finish, { once: true });
+                window.setTimeout(finish, timeoutMs);
+            });
+
+            const prepareLogosForPdf = async (root) => {
+                // Remove the fallback icons from the clone so they don't appear in the PDF.
+                root.querySelectorAll('[data-logo-fallback]').forEach((el) => el.remove());
+
+                const imgs = [...root.querySelectorAll('img[data-brand-logo]')];
+                imgs.forEach((img) => {
+                    const pdfSrc = (img.getAttribute('data-logo-pdf-src') || '').trim();
+                    const screenSrc = (img.getAttribute('data-logo-screen-src') || '').trim();
+
+                    if (pdfSrc) {
+                        img.src = pdfSrc;
+                        img.classList.remove('brand-logo--invert');
+                    } else if (screenSrc) {
+                        img.src = screenSrc;
+                        img.classList.add('brand-logo--invert');
+                    } else {
+                        img.classList.add('brand-logo--invert');
+                    }
+
+                    img.classList.remove('hidden');
+                });
+
+                await Promise.all(imgs.map((img) => waitForImage(img)));
+            };
+
+            const createInvoiceCloneForPdf = (targetWidthMm) => {
+                const wrapper = document.createElement('div');
+                wrapper.style.position = 'fixed';
+                wrapper.style.left = '-10000px';
+                wrapper.style.top = '0';
+                wrapper.style.width = `${targetWidthMm}mm`;
+                wrapper.style.background = '#fff';
+                wrapper.className = 'pdf-mode';
+
+                const clone = invoice.cloneNode(true);
+                clone.style.maxWidth = `${targetWidthMm}mm`;
+                wrapper.appendChild(clone);
+                document.body.appendChild(wrapper);
+
+                replaceFormFieldsWithText(clone);
+                stripInteractiveElements(clone);
+
+                return { wrapper, clone };
+            };
+
+            const setBusy = (isBusy) => {
+                const all = [...downloadButtons, ...previewButtons];
+                all.forEach((btn) => {
+                    btn.disabled = isBusy;
+                    btn.style.opacity = isBusy ? '0.7' : '';
+                    btn.style.cursor = isBusy ? 'wait' : '';
+                });
+            };
+
+            const generatePdf = async (mode) => {
+                setBusy(true);
+
+                try {
+                    if (typeof window.__saveInvoiceDraft === 'function') {
+                        window.__saveInvoiceDraft();
+                    }
+
+                    const A4_WIDTH_MM = 210;
+                    const marginMm = 10;
+                    const targetWidthMm = A4_WIDTH_MM - (marginMm * 2);
+
+                    const { wrapper, clone } = createInvoiceCloneForPdf(targetWidthMm);
+                    await prepareLogosForPdf(clone);
+                    const canvas = await html2canvas(clone, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        useCORS: true,
+                    });
+
+                    wrapper.remove();
+
+                    const { jsPDF } = window.jspdf;
+                    const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'p' });
+
+                    const pageWidth = pdf.internal.pageSize.getWidth();
+                    const pageHeight = pdf.internal.pageSize.getHeight();
+
+                    const footerMm = 6; // reserved space for page numbering
+                    const imgX = marginMm;
+                    const imgY = marginMm;
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const imgWidthMm = pageWidth - (marginMm * 2);
+                    const imgHeightMm = (canvas.height * imgWidthMm) / canvas.width;
+
+                    const usableHeightMm = pageHeight - (marginMm * 2) - footerMm;
+                    const totalPages = Math.max(1, Math.ceil(imgHeightMm / usableHeightMm));
+
+                    for (let page = 0; page < totalPages; page++) {
+                        if (page > 0) pdf.addPage();
+
+                        const sourceYpx = Math.round((usableHeightMm * page * canvas.width) / imgWidthMm);
+                        const sourceHeightPx = Math.round((usableHeightMm * canvas.width) / imgWidthMm);
+
+                        const pageCanvas = document.createElement('canvas');
+                        pageCanvas.width = canvas.width;
+                        pageCanvas.height = Math.min(sourceHeightPx, canvas.height - sourceYpx);
+                        const ctx = pageCanvas.getContext('2d');
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+                        ctx.drawImage(
+                            canvas,
+                            0,
+                            sourceYpx,
+                            canvas.width,
+                            pageCanvas.height,
+                            0,
+                            0,
+                            canvas.width,
+                            pageCanvas.height
+                        );
+
+                        const pageImg = pageCanvas.toDataURL('image/png');
+                        const pageImgHeightMm = (pageCanvas.height * imgWidthMm) / pageCanvas.width;
+
+                        pdf.addImage(pageImg, 'PNG', imgX, imgY, imgWidthMm, pageImgHeightMm);
+
+                        // Page numbering
+                        if (totalPages > 1) {
+                            pdf.setFont('helvetica', 'normal');
+                            pdf.setFontSize(9);
+                            pdf.setTextColor(0, 0, 0);
+                            const label = `Page ${page + 1} / ${totalPages}`;
+                            pdf.text(label, pageWidth - marginMm, pageHeight - (marginMm / 2), { align: 'right' });
+                        }
+                    }
+
+                    if (mode === 'preview') {
+                        const blob = pdf.output('blob');
+                        const url = URL.createObjectURL(blob);
+                        openPdfModal(url, getInvoiceFileName());
+                    } else {
+                        pdf.save(getInvoiceFileName());
+                    }
+                } catch (err) {
+                    // Fallback to print dialog if PDF generation fails
+                    console.error(err);
+                    window.print();
+                } finally {
+                    setBusy(false);
+                }
+            };
+
+            downloadButtons.forEach((btn) => btn.addEventListener('click', () => generatePdf('download')));
+            previewButtons.forEach((btn) => btn.addEventListener('click', () => generatePdf('preview')));
+        })();
+
+        (function () {
+            const itemsBody = document.getElementById('itemsBody');
+            if (!itemsBody) return;
+
+            const currencyCodeEl = document.getElementById('currencyCode');
+            const defaultVatRateEl = document.getElementById('defaultVatRate');
+            const regimeSuspensifEl = document.getElementById('regimeSuspensif');
+
+            const DEFAULT_VAT_RATE = 18;
+
+            const withholdingTypeEl = document.getElementById('withholdingType');
+            const withholdingProfileEl = document.getElementById('withholdingProfile');
+            const withholdingRateEl = document.getElementById('withholdingRate');
+            const withholdingRateDisplayEl = document.getElementById('withholdingRateDisplay');
+
+            const withholdingRowEl = document.getElementById('withholdingRow');
+            const withholdingLabelEl = document.getElementById('withholdingLabel');
+            const withholdingAmountEl = document.getElementById('withholdingAmount');
+            const netToPayRowEl = document.getElementById('netToPayRow');
+            const netToPayEl = document.getElementById('netToPay');
+
+            const totalHtEl = document.getElementById('totalHt');
+            const totalVatEl = document.getElementById('totalVat');
+            const totalTtcEl = document.getElementById('totalTtc');
+            const vatLabelEl = document.getElementById('vatLabel');
+            const articlesCountEl = document.getElementById('articlesCount');
+
+            const parseMoney = (raw) => {
+                if (raw == null) return 0;
+                let str = String(raw)
+                    .replace(/\u00A0|\u202F/g, ' ') // nbsp / narrow nbsp
+                    .trim();
+
+                // Remove currency symbols and letters
+                str = str.replace(/[^0-9,\.\-\s]/g, '').replace(/\s+/g, '');
+                if (!str) return 0;
+
+                const hasComma = str.includes(',');
+                const hasDot = str.includes('.');
+
+                if (hasComma && hasDot) {
+                    // Use the last separator as decimal mark
+                    const lastComma = str.lastIndexOf(',');
+                    const lastDot = str.lastIndexOf('.');
+                    const decimalIsComma = lastComma > lastDot;
+
+                    if (decimalIsComma) {
+                        str = str.replace(/\./g, '');
+                        str = str.replace(/,/g, '.');
+                    } else {
+                        str = str.replace(/,/g, '');
+                    }
+                } else if (hasComma && !hasDot) {
+                    str = str.replace(/,/g, '.');
+                }
+
+                const value = Number(str);
+                return Number.isFinite(value) ? value : 0;
+            };
+
+            const formatMoney = (value) => {
+                const n = Number.isFinite(value) ? value : 0;
+                return new Intl.NumberFormat('fr-FR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }).format(n);
+            };
+
+            const getCurrencyMeta = (code) => {
+                switch (code) {
+                    case 'USD':
+                        return { code: 'USD', symbol: '$', decimals: 2 };
+                    case 'TND':
+                        return { code: 'TND', symbol: 'DT', decimals: 3 };
+                    case 'EUR':
+                    default:
+                        return { code: 'EUR', symbol: '€', decimals: 2 };
+                }
+            };
+
+            const getCurrencyCode = () => {
+                const v = (currencyCodeEl && currencyCodeEl.value) ? currencyCodeEl.value : 'TND';
+                return v === 'USD' || v === 'TND' || v === 'EUR' ? v : 'TND';
+            };
+
+            const formatAmount = (value, currencyCode) => {
+                const meta = getCurrencyMeta(currencyCode);
+                const n = Number.isFinite(value) ? value : 0;
+                return new Intl.NumberFormat('fr-FR', {
+                    minimumFractionDigits: meta.decimals,
+                    maximumFractionDigits: meta.decimals,
+                }).format(n);
+            };
+
+            const formatDisplayCurrency = (value) => {
+                const code = getCurrencyCode();
+                const meta = getCurrencyMeta(code);
+                return `${formatAmount(value, code)} ${meta.symbol}`;
+            };
+
+            const formatDisplayPercent = (rate) => {
+                const n = Number.isFinite(rate) ? rate : 0;
+                return `${Number.isInteger(n) ? n : Number(n.toFixed(1))}%`;
+            };
+
+            const getWithholdingRateFromCatalog = () => {
+                const type = (withholdingTypeEl?.value || 'none');
+                const profile = (withholdingProfileEl?.value || 'is35_or_pp_bareme');
+
+                if (type === 'acq_1000') {
+                    if (profile === 'is15') return 1;
+                    if (profile === 'is10_or_pp_2_3') return 0.5;
+                    return 1.5; // is35_or_pp_bareme
+                }
+
+                if (type === 'honoraires_reel') return 3;
+                if (type === 'hotel_space') return 5;
+                if (type === 'loyers') return 10;
+                if (type === 'honoraires_forfaitaire') return 10;
+                return 0;
+            };
+
+            const syncWithholdingUi = () => {
+                if (!withholdingTypeEl) return;
+
+                const type = withholdingTypeEl.value || 'none';
+                const needsProfile = type === 'acq_1000';
+
+                if (withholdingProfileEl) {
+                    withholdingProfileEl.classList.toggle('hidden', !needsProfile);
+                }
+
+                const rate = getWithholdingRateFromCatalog();
+                if (withholdingRateEl) withholdingRateEl.value = String(rate);
+                if (withholdingRateDisplayEl) withholdingRateDisplayEl.textContent = formatDisplayPercent(rate);
+            };
+
+            const syncCurrencySymbols = () => {
+                const code = getCurrencyCode();
+                const meta = getCurrencyMeta(code);
+                document.querySelectorAll('[data-currency-symbol]').forEach((el) => {
+                    el.textContent = meta.symbol;
+                });
+            };
+
+            const clamp = (n, min, max) => {
+                if (!Number.isFinite(n)) return min;
+                return Math.min(max, Math.max(min, n));
+            };
+
+            const formatVat = (rate) => {
+                const n = Number.isFinite(rate) ? rate : 0;
+                // Keep up to 1 decimal for VAT; avoid trailing .0 when integer
+                return Number.isInteger(n) ? String(n) : String(Number(n.toFixed(1)));
+            };
+
+            const getRowEls = (tr) => {
+                const qtyInput = tr.querySelector('td:nth-child(2) input[type="number"]');
+                const unitInput = tr.querySelector('td:nth-child(3) input');
+                const vatInput = tr.querySelector('td:nth-child(4) input[type="number"]');
+                const totalCell = tr.querySelector('td:nth-child(5)');
+                return { qtyInput, unitInput, vatInput, totalCell };
+            };
+
+            const isRegimeSuspensif = () => Boolean(regimeSuspensifEl && regimeSuspensifEl.checked);
+
+            const applyRegimeSuspensifState = () => {
+                const enabled = isRegimeSuspensif();
+
+                if (defaultVatRateEl) {
+                    defaultVatRateEl.disabled = enabled;
+                    if (enabled) defaultVatRateEl.value = '0';
+                    else defaultVatRateEl.value = String(DEFAULT_VAT_RATE);
+                }
+
+                itemsBody.querySelectorAll('tr').forEach((tr) => {
+                    const { vatInput } = getRowEls(tr);
+                    if (!vatInput) return;
+                    vatInput.disabled = enabled;
+                    if (enabled) vatInput.value = '0';
+                    else vatInput.value = String(DEFAULT_VAT_RATE);
+                });
+
+                recalc();
+            };
+
+            const recalc = () => {
+                syncCurrencySymbols();
+                syncWithholdingUi();
+
+                let totalHt = 0;
+                let totalVat = 0;
+                const vatRates = new Set();
+
+                const rows = Array.from(itemsBody.querySelectorAll('tr'));
+                rows.forEach((tr) => {
+                    const { qtyInput, unitInput, vatInput, totalCell } = getRowEls(tr);
+                    const qty = Math.max(1, Math.round(Number(qtyInput?.value || 1)));
+                    if (qtyInput && String(qtyInput.value) !== String(qty)) qtyInput.value = String(qty);
+
+                    const unit = parseMoney(unitInput?.value ?? unitInput?.getAttribute('value'));
+                    const rate = clamp(Number(vatInput?.value || 0), 0, 100);
+                    if (Number.isFinite(rate)) vatRates.add(rate);
+
+                    const rowHt = qty * unit;
+                    const rowVat = rowHt * (rate / 100);
+                    const rowTtc = rowHt + rowVat;
+
+                    totalHt += rowHt;
+                    totalVat += rowVat;
+
+                    tr.dataset.rowHt = String(rowHt);
+                    tr.dataset.rowVat = String(rowVat);
+                    tr.dataset.rowTtc = String(rowTtc);
+
+                    if (totalCell) {
+                        totalCell.textContent = formatDisplayCurrency(rowHt);
+                    }
+                });
+
+                if (totalHtEl) totalHtEl.textContent = formatDisplayCurrency(totalHt);
+                if (totalVatEl) totalVatEl.textContent = formatDisplayCurrency(totalVat);
+                const ttc = totalHt + totalVat;
+                if (totalTtcEl) totalTtcEl.textContent = formatAmount(ttc, getCurrencyCode());
+
+                const withholdingRate = clamp(Number(withholdingRateEl?.value || 0), 0, 100);
+                const withholdingAmount = ttc * (withholdingRate / 100);
+                const netToPay = ttc - withholdingAmount;
+
+                const showWithholding = withholdingRate > 0.000001;
+                if (withholdingRowEl) withholdingRowEl.classList.toggle('hidden', !showWithholding);
+                if (netToPayRowEl) netToPayRowEl.classList.toggle('hidden', !showWithholding);
+
+                if (withholdingLabelEl) withholdingLabelEl.textContent = `Retenue (${formatDisplayPercent(withholdingRate)})`;
+                if (withholdingAmountEl) withholdingAmountEl.textContent = formatDisplayCurrency(withholdingAmount);
+                if (netToPayEl) netToPayEl.textContent = formatDisplayCurrency(netToPay);
+
+                if (articlesCountEl) {
+                    articlesCountEl.textContent = String(rows.length).padStart(2, '0');
+                }
+
+                if (vatLabelEl) {
+                    const rates = Array.from(vatRates).filter((r) => Number.isFinite(r));
+                    const uniqueRates = Array.from(new Set(rates));
+                    if (uniqueRates.length === 1) {
+                        const r = uniqueRates[0];
+                        vatLabelEl.textContent = `TVA (${Number.isInteger(r) ? r : r.toFixed(1)}%)`;
+                    } else {
+                        vatLabelEl.textContent = 'TVA';
+                    }
+                }
+            };
+
+            const addItem = () => {
+                const lastRow = itemsBody.querySelector('tr:last-child');
+                if (!lastRow) return;
+                const newRow = lastRow.cloneNode(true);
+
+                // Reset values
+                const desc = newRow.querySelector('td:nth-child(1) input');
+                if (desc) desc.value = '';
+                const { qtyInput, unitInput, vatInput, totalCell } = getRowEls(newRow);
+                if (qtyInput) qtyInput.value = '1';
+                if (unitInput) unitInput.value = '0.00';
+                const defaultVat = Math.max(0, Number(defaultVatRateEl?.value || 0));
+                if (vatInput) {
+                    if (isRegimeSuspensif()) {
+                        vatInput.value = '0';
+                        vatInput.disabled = true;
+                    } else {
+                        vatInput.disabled = false;
+                        vatInput.value = formatVat(clamp(Number(defaultVat), 0, 100));
+                    }
+                }
+                if (totalCell) totalCell.textContent = '0.00 €';
+
+                itemsBody.appendChild(newRow);
+                recalc();
+            };
+
+            // Event delegation for buttons
+            document.addEventListener('click', (e) => {
+                const target = e.target;
+                if (!(target instanceof Element)) return;
+                const btn = target.closest('button[data-action]');
+                if (!btn) return;
+
+                const action = btn.getAttribute('data-action');
+                if (action === 'add-item') {
+                    addItem();
+                    return;
+                }
+
+                const tr = btn.closest('tr');
+                if (!tr || !itemsBody.contains(tr)) return;
+
+                const { qtyInput } = getRowEls(tr);
+                const currentQty = Math.max(1, Math.round(Number(qtyInput?.value || 1)));
+
+                if (action === 'qty-increase') {
+                    if (qtyInput) qtyInput.value = String(currentQty + 1);
+                    recalc();
+                } else if (action === 'qty-decrease') {
+                    if (qtyInput) qtyInput.value = String(Math.max(1, currentQty - 1));
+                    recalc();
+                } else if (action === 'row-delete') {
+                    // Keep at least one row
+                    const rows = itemsBody.querySelectorAll('tr');
+                    if (rows.length > 1) {
+                        tr.remove();
+                    } else {
+                        // If only one row, just clear it
+                        const desc = tr.querySelector('td:nth-child(1) input');
+                        if (desc) desc.value = '';
+                        const { qtyInput, unitInput, vatInput, totalCell } = getRowEls(tr);
+                        if (qtyInput) qtyInput.value = '1';
+                        if (unitInput) unitInput.value = '0.00';
+                        if (vatInput) vatInput.value = '0';
+                        if (totalCell) totalCell.textContent = '0.00 €';
+                    }
+                    recalc();
+                }
+            });
+
+            // Recalculate on typing
+            itemsBody.addEventListener('input', (e) => {
+                const el = e.target;
+                if (!(el instanceof Element)) return;
+                if (el.matches('input[type="number"], input[type="text"], textarea')) {
+                    recalc();
+                }
+            });
+
+            // Apply default TVA to all existing rows when changed
+            if (defaultVatRateEl) {
+                const applyDefaultVatToAllRows = () => {
+                    if (isRegimeSuspensif()) {
+                        applyRegimeSuspensifState();
+                        return;
+                    }
+                    const r = clamp(Number(defaultVatRateEl.value || 0), 0, 100);
+                    defaultVatRateEl.value = formatVat(r);
+                    itemsBody.querySelectorAll('tr').forEach((tr) => {
+                        const { vatInput } = getRowEls(tr);
+                        if (vatInput) vatInput.value = formatVat(r);
+                    });
+                    recalc();
+                };
+
+                defaultVatRateEl.addEventListener('change', applyDefaultVatToAllRows);
+                defaultVatRateEl.addEventListener('blur', applyDefaultVatToAllRows);
+            }
+
+            if (regimeSuspensifEl) {
+                regimeSuspensifEl.addEventListener('change', applyRegimeSuspensifState);
+            }
+
+            // Normalize formatting on blur (prix/tva)
+            itemsBody.addEventListener(
+                'blur',
+                (e) => {
+                    const el = e.target;
+                    if (!(el instanceof HTMLInputElement)) return;
+
+                    // Unit price inputs are in column 3 and are type text
+                    const isUnitPrice = el.matches('td:nth-child(3) input[type="text"]');
+                    const isVat = el.matches('td:nth-child(4) input[type="number"]');
+
+                    if (isUnitPrice) {
+                        const v = parseMoney(el.value);
+                        el.value = formatMoney(v);
+                        recalc();
+                    } else if (isVat) {
+                        const r = clamp(Number(el.value || 0), 0, 100);
+                        el.value = formatVat(r);
+                        recalc();
+                    }
+                },
+                true
+            );
+
+            if (currencyCodeEl) {
+                currencyCodeEl.addEventListener('change', () => {
+                    recalc();
+                });
+            }
+
+            if (withholdingTypeEl) {
+                withholdingTypeEl.addEventListener('change', () => {
+                    recalc();
+                });
+            }
+
+            if (withholdingProfileEl) {
+                withholdingProfileEl.addEventListener('change', () => {
+                    recalc();
+                });
+            }
+
+            itemsBody.addEventListener('change', (e) => {
+                const el = e.target;
+                if (!(el instanceof Element)) return;
+                if (el.matches('select, input[type="number"]')) recalc();
+            });
+
+            // Initial calculation
+            applyRegimeSuspensifState();
+        })();
+    </script>
+</body></html>
