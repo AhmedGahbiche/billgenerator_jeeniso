@@ -1,74 +1,30 @@
 # Stitch Invoice App
 
-## Easiest way to run (recommended)
+## Run (launchers only)
 
-If you’re sharing this with someone non-technical, use the platform launchers:
+This project is meant to be started only by double‑clicking a launcher (no VS Code, no Terminal usage required).
 
-- macOS: double‑click **Stitch Launcher.app**
-- Windows: double‑click **Stitch Launcher (Windows).bat**
+### macOS
 
-### Option A — Terminal (1 command)
+- Double‑click **Stitch Launcher.app**
+- A Terminal window opens + your browser opens the app
+- To stop the app/server: close the Terminal window
 
-```bash
-cd "$(dirname "$0")"  # or just `cd` into the stitch folder
-python3 server.py --open
-```
+If macOS blocks it the first time: right‑click **Stitch Launcher.app** → **Open**.
 
-- This starts the local server **and opens** the app in your browser.
-- It also enables disk persistence via `data/invoices.json`.
+### Windows
 
-To open the archive directly:
-
-```bash
-python3 server.py --open archive.html
-```
-
-### Option B — VS Code Task (1 click)
-
-- Open the Command Palette → **Tasks: Run Task**
-- Run **“Stitch: Run server (opens browser)”**
-
-### Option C — macOS double‑click
-
-- One-time setup (in the stitch folder):
-
-```bash
-chmod +x run.command
-```
-
-- Then double‑click `run.command`.
-
-Alternative (recommended for non-technical users): double‑click **Stitch Launcher.app**.
-
-This will open a Terminal window and the browser. To stop the server, close the Terminal window.
-
-If double‑click shows an error:
-
-- **“could not be executed… appropriate access privileges” / “Permission denied” / doesn’t run**:
-  - Open Terminal once and run:
-    - `cd /path/to/stitch`
-    - `chmod +x run.command`
-- If you’re sharing this folder to another Mac: prefer **Finder → Compress** (zip) before sending, because some copy methods can remove the executable permission; if it happens, run `chmod +x run.command` again.
-- **macOS blocks it (quarantine)**:
-  - Right‑click `run.command` → **Open** (do this once)
-- **Python not found**:
-  - Install Python 3, then retry
-
-### Option D — Windows double‑click (no VS Code, no Terminal)
-
-- Recommended: Double‑click **Stitch Launcher (Windows).bat**
-- Or: Double‑click `run_windows.bat`
+- Double‑click **Stitch Launcher (Windows).bat**
 - Keep the black window open while using the app (closing it stops the server)
 
-Open the archive directly (optional):
+Optional: open archive directly by running:
 
-```bat
-run_windows.bat archive.html
+```text
+Stitch Launcher (Windows).bat archive.html
 ```
 
-If it says Python is not installed, install **Python 3** and try again.
+### Requirement (both)
 
-## Note about `python -m http.server`
-
-You _can_ run a static server, but it won’t save invoices to disk.
-Use `python3 server.py` if you want invoices to persist across reboots.
+- Python 3 must be installed
+  - Windows: the launcher will tell you if it’s missing
+  - macOS: install Python 3 if the launcher shows a message
