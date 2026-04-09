@@ -6,4 +6,5 @@ __pycache__/
 /data/invoices.json
 
 # Optional: editor / OS
-.vscode/
+.vscode/*
+!.vscode/tasks.json
