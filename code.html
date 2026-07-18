@@ -150,12 +150,6 @@
                 box-shadow: none !important;
                 text-shadow: none !important;
             }
-            #invoice * {
-                background: transparent !important;
-            }
-            #invoice * {
-                border-color: rgba(0, 0, 0, 0.15) !important;
-            }
 
             /* Ensure form values print cleanly */
             #invoice input,
@@ -171,11 +165,6 @@
 
             /* Hide interactive controls (add/remove/delete/buttons) in the PDF */
             #invoice button {
-                display: none !important;
-            }
-            /* Hide the last table column ("Supprimer") */
-            #invoice table th:last-child,
-            #invoice table td:last-child {
                 display: none !important;
             }
 
@@ -199,7 +188,6 @@
             border: none !important;
             border-radius: 0 !important;
             box-shadow: none !important;
-            padding: 0 !important;
             max-width: 210mm !important;
             min-height: auto !important;
         }
@@ -208,62 +196,15 @@
             text-shadow: none !important;
             box-shadow: none !important;
         }
-        .pdf-mode #invoice * {
-            background: transparent !important;
-            border-color: rgba(0, 0, 0, 0.15) !important;
-        }
         .pdf-mode #invoice {
             font-size: 11px;
             line-height: 1.25;
         }
-
-        /* Scale down Tailwind text utilities inside the PDF clone */
-        .pdf-mode #invoice .text-5xl { font-size: 2.35rem !important; line-height: 1.08 !important; }
-        .pdf-mode #invoice .text-4xl { font-size: 1.75rem !important; line-height: 1.12 !important; }
-        .pdf-mode #invoice .text-3xl { font-size: 1.45rem !important; line-height: 1.12 !important; }
-        .pdf-mode #invoice .text-2xl { font-size: 1.15rem !important; line-height: 1.1 !important; }
-        .pdf-mode #invoice .text-lg { font-size: 0.95rem !important; }
-        .pdf-mode #invoice .text-base { font-size: 0.9rem !important; }
-        .pdf-mode #invoice .text-sm { font-size: 0.82rem !important; }
-        .pdf-mode #invoice .text-xs { font-size: 0.75rem !important; }
-
-        /* Compact spacing utilities commonly used in the invoice */
-        .pdf-mode #invoice [class~="mb-20"] { margin-bottom: 12mm !important; }
-        .pdf-mode #invoice [class~="mb-16"] { margin-bottom: 8mm !important; }
-        .pdf-mode #invoice [class~="mt-8"] { margin-top: 4mm !important; }
-        .pdf-mode #invoice [class~="gap-16"] { gap: 10mm !important; }
-        .pdf-mode #invoice [class~="gap-12"] { gap: 7mm !important; }
-        .pdf-mode #invoice [class~="gap-8"] { gap: 6mm !important; }
-        .pdf-mode #invoice [class~="space-y-8"] > :not([hidden]) ~ :not([hidden]) { margin-top: 6mm !important; }
-        .pdf-mode #invoice [class~="space-y-6"] > :not([hidden]) ~ :not([hidden]) { margin-top: 5mm !important; }
-        .pdf-mode #invoice [class~="space-y-4"] > :not([hidden]) ~ :not([hidden]) { margin-top: 4mm !important; }
-        .pdf-mode #invoice [class~="space-y-3"] > :not([hidden]) ~ :not([hidden]) { margin-top: 2.5mm !important; }
-
-        .pdf-mode #invoice [class~="p-6"] { padding: 12px !important; }
-        .pdf-mode #invoice [class~="p-4"] { padding: 10px !important; }
-        .pdf-mode #invoice [class~="p-3"] { padding: 6px !important; }
-        .pdf-mode #invoice [class~="py-6"] { padding-top: 8px !important; padding-bottom: 8px !important; }
-        .pdf-mode #invoice [class~="py-2"] { padding-top: 4px !important; padding-bottom: 4px !important; }
-        .pdf-mode #invoice [class~="pt-12"] { padding-top: 6mm !important; }
-
-        /* Reduce signature/stamp blocks height */
-        .pdf-mode #invoice [class~="h-28"] { height: 72px !important; }
-        .pdf-mode #invoice [data-pdf-section="header"] {
-            margin-bottom: 16mm !important;
-        }
-        .pdf-mode #invoice [data-pdf-section="recipient"] {
-            margin-bottom: 12mm !important;
-        }
-        .pdf-mode #invoice [data-pdf-section="items"] {
-            margin-bottom: 10mm !important;
-        }
-        .pdf-mode #invoice [data-pdf-section="totals"] {
-            padding-top: 8mm !important;
-        }
         .pdf-mode #invoice textarea {
             line-height: 1.25 !important;
         }
-        .pdf-mode #invoice .pdf-hide {
+        .pdf-mode #invoice .pdf-hide,
+        .pdf-mode #invoice .no-print {
             display: none !important;
         }
 
@@ -339,150 +280,128 @@
 <div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
 <!-- Center: The Invoice Paper -->
 <div class="xl:col-span-9 order-2 xl:order-1">
-<div class="a4-canvas bg-surface-container-low mx-auto p-8 md:p-16 rounded-2xl shadow-2xl relative overflow-hidden border border-outline-variant/10" id="invoice" aria-label="Facture">
-<!-- Abstract Design Element -->
-<div class="absolute -top-32 -right-32 w-80 h-80 bg-primary/5 rounded-full blur-[120px] pdf-hide pointer-events-none"></div>
-<!-- Invoice Header -->
-<div class="flex flex-col md:flex-row justify-between items-start mb-20 gap-8" data-pdf-section="header">
-<div class="space-y-6">
-<div class="flex items-center gap-3 mb-4">
-<div class="h-14 w-40 flex items-center justify-center p-1 shrink-0">
+<div class="a4-canvas bg-white text-black mx-auto p-[10mm] shadow-2xl relative overflow-hidden" id="invoice" aria-label="Facture">
+<!-- Header: logo | title | reference (bordered table, matches the reference devis header) -->
+<table class="w-full border-collapse mb-4" data-pdf-section="header">
+<tbody><tr>
+<td class="border border-black p-3 align-middle" style="width:38mm;">
+<div class="h-14 w-full flex items-center justify-center">
 <img class="brand-logo hidden" data-brand-logo data-logo-screen-src="assets/jeeniso-logo.PNG" data-logo-pdf-src="assets/Copy of JEENISo_Logo.PNG" alt="JEENISo" src="assets/jeeniso-logo.PNG" crossorigin="anonymous"/>
-<span class="material-symbols-outlined text-[#002e6a] text-3xl" data-logo-fallback style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="material-symbols-outlined text-3xl" data-logo-fallback style="color:#1450c4;font-variation-settings: 'FILL' 1;">description</span>
 </div>
-<h3 class="text-3xl font-black tracking-tighter text-on-surface">JEENISo</h3>
+</td>
+<td class="border border-black p-3 text-center align-middle">
+<span class="text-2xl font-black tracking-wide" style="color:#1450c4;">FACTURE</span>
+</td>
+<td class="border border-black p-3 align-middle" style="width:58mm;">
+<div class="flex items-baseline gap-1 text-[12px] font-semibold whitespace-nowrap">
+<span>Référence :</span>
+<input class="bg-transparent border-none p-0 text-[12px] font-semibold focus:ring-0" id="invoiceRefPrefix" type="text" value="FAC-2024-" style="width:20mm;" aria-label="Préfixe référence facture"/>
+<input class="bg-transparent border-none p-0 text-[12px] font-semibold focus:ring-0" id="invoiceRefNumber" type="text" value="001" style="width:12mm;" aria-label="Numéro facture"/>
 </div>
-<div class="space-y-4 max-w-sm">
-<div class="p-4 bg-surface-container-lowest/50 rounded-xl border border-outline-variant/5">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest mb-2">Émetteur</p>
-<div class="space-y-1">
-<input class="w-full bg-transparent border-none p-0 text-sm font-bold text-on-surface focus:ring-0" id="issuerName" value="JEENISo France SAS"/>
-<textarea class="w-full bg-transparent border-none p-0 text-xs text-on-surface-variant focus:ring-0 resize-none leading-relaxed" id="issuerDetails" rows="3">128 Rue de la Technologie, 75008 Paris, France
+</td>
+</tr></tbody>
+</table>
+
+<!-- Issuer address (plain text block, matches the reference's top-left institution block) -->
+<div class="text-[11px] text-gray-700 leading-snug mb-4">
+<input class="block bg-transparent border-none p-0 font-bold text-black text-[12px] focus:ring-0 w-full mb-1" id="issuerName" value="JEENISo France SAS"/>
+<textarea class="block bg-transparent border-none p-0 text-[11px] text-gray-700 focus:ring-0 resize-none w-full leading-snug" id="issuerDetails" rows="3">128 Rue de la Technologie, 75008 Paris, France
 SIRET: 842 930 112 00045
 TVA Intra: FR 93 842930112</textarea>
-<input class="w-full bg-transparent border-none p-0 text-xs text-primary font-medium focus:ring-0" id="issuerEmail" value="contact@jeeniso.com"/>
+</div>
+
+<!-- Meta info shaded box (Date d'émission / Échéance / Réf. Projet) -->
+<!-- Plain inline-block rows, no <table> and no flexbox: html2canvas renders both unreliably
+     in the off-screen PDF clone (label text was silently dropped/blanked). -->
+<div class="inline-block mb-4" style="background:#f0f0f0;padding:8px 16px;" data-pdf-section="meta">
+<div class="text-[11px]">
+<div class="py-0.5"><span class="font-bold" style="display:inline-block;width:32mm;vertical-align:middle;">Date d'émission :</span><input class="bg-transparent border-none p-0 text-[11px] font-semibold focus:ring-0 cursor-pointer" style="display:inline-block;vertical-align:middle;" id="issueDate" type="date" value="2024-05-24"/></div>
+<div class="py-0.5"><span class="font-bold" style="display:inline-block;width:32mm;vertical-align:middle;">Échéance :</span><input class="bg-transparent border-none p-0 text-[11px] font-semibold focus:ring-0 cursor-pointer" style="display:inline-block;vertical-align:middle;" id="dueDate" type="date" value="2024-06-24"/></div>
+<div class="py-0.5"><span class="font-bold" style="display:inline-block;width:32mm;vertical-align:middle;">Réf. Projet :</span><input class="bg-transparent border-none p-0 text-[11px] font-semibold focus:ring-0" style="display:inline-block;vertical-align:middle;" id="projectRef" placeholder="Ex: Ref-24-X-01" type="text"/></div>
 </div>
 </div>
+
+<!-- Destinataire (bold plain-text block, matches the reference exactly) -->
+<div class="text-[12px] mb-6" data-pdf-section="recipient">
+<p class="font-bold mb-0.5">Destinataire : <input class="bg-transparent border-none p-0 font-bold text-[12px] focus:ring-0 align-baseline" style="width:70mm;" id="clientName" placeholder="Nom du Client ou Société" type="text"/></p>
+<p class="font-bold mb-0.5">Matricule fiscale : <input class="bg-transparent border-none p-0 font-bold text-[12px] focus:ring-0 align-baseline" style="width:50mm;" id="clientFiscalId" placeholder="FR 00 000000000" type="text"/></p>
+<div class="font-bold mb-0.5"><span style="display:inline-block;vertical-align:top;">Adresse :</span> <textarea class="bg-transparent border-none p-0 font-bold text-[12px] focus:ring-0 resize-none leading-snug" id="clientAddress" placeholder="Adresse complète &amp; Coordonnées" rows="2" style="display:inline-block;vertical-align:top;width:75mm;"></textarea></div>
 </div>
-</div>
-<div class="text-right space-y-6 self-start flex flex-col items-end">
-<div class="space-y-1">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Référence Facture</p>
-<div class="flex items-center justify-end">
-<input class="w-40 bg-transparent border-none p-0 text-3xl font-mono font-black text-on-surface focus:ring-0 text-right tracking-tighter uppercase" id="invoiceRefPrefix" type="text" value="FAC-2024-" aria-label="Préfixe référence facture"/>
-<input class="w-20 bg-transparent border-none p-0 text-3xl font-mono font-black text-on-surface focus:ring-0 text-right" id="invoiceRefNumber" type="text" value="001" aria-label="Numéro facture"/>
-</div>
-</div>
-<div class="space-y-1">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Date d'émission</p>
-<input class="bg-transparent border-none p-0 text-on-surface text-base font-semibold focus:ring-0 text-right cursor-pointer" id="issueDate" type="date" value="2024-05-24"/>
-</div>
-</div>
-</div>
-<!-- Recipient Section -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20" data-pdf-section="recipient">
-<div class="space-y-4 p-6 rounded-2xl bg-[#1C1B1B] border border-outline-variant/5 hover:border-primary/20 transition-colors group">
-<div class="flex justify-between items-center">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Facturer à</p>
-<span class="material-symbols-outlined text-xs text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">person_search</span>
-</div>
-<div class="space-y-3">
-<input class="w-full bg-transparent border-none p-0 text-lg font-black text-on-surface placeholder-outline-variant/50 focus:ring-0 tracking-tight" id="clientName" placeholder="Nom du Client ou Société" type="text"/>
-<textarea class="w-full bg-transparent border-none p-0 text-sm text-on-surface-variant placeholder-outline-variant/50 focus:ring-0 resize-none leading-relaxed" id="clientAddress" placeholder="Adresse complète &amp; Coordonnées" rows="3"></textarea>
-<div class="flex items-center gap-2 pt-2 border-t border-outline-variant/5">
-<span class="text-[9px] text-on-surface-variant uppercase font-bold">ID Fiscal:</span>
-<input class="bg-transparent border-none p-0 text-[11px] text-on-surface font-mono focus:ring-0 placeholder-outline-variant/30" id="clientFiscalId" placeholder="FR 00 000000000" type="text"/>
-</div>
-</div>
-</div>
-<div class="space-y-4 p-6 border border-outline-variant/10 rounded-2xl">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Informations Paiement</p>
-<div class="space-y-4">
-<div class="flex flex-col gap-1">
-<label class="text-[10px] text-on-surface-variant/70 uppercase font-bold">Échéance</label>
-<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 font-medium cursor-pointer" id="dueDate" type="date" value="2024-06-24"/>
-</div>
-<div class="flex flex-col gap-1">
-<label class="text-[10px] text-on-surface-variant/70 uppercase font-bold">Référence Projet</label>
-<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 font-medium" id="projectRef" placeholder="Ex: Ref-24-X-01" type="text"/>
-</div>
-</div>
-</div>
-</div>
-<!-- Dynamic Table -->
-<div class="mb-16" data-pdf-section="items">
+<!-- Dynamic Table (bordered, shaded header — matches the reference devis table) -->
+<div class="mb-4" data-pdf-section="items">
 <div class="overflow-x-auto">
-<table class="w-full text-left min-w-[600px]">
+<table class="w-full text-left border-collapse text-[11px] min-w-[600px]">
 <thead>
-<tr class="border-b border-outline-variant/20">
-<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest">Description</th>
-<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-center w-20">Qté</th>
-<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-right w-36">Prix Unit. HT</th>
-<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-right w-24">TVA</th>
-<th class="pb-5 text-[10px] font-black text-primary uppercase tracking-widest text-right w-32">Total HT</th>
-<th class="pb-5 w-10">Supprimer</th>
+<tr style="background:#dcdcdc;">
+<th class="border border-black p-2 font-bold">Désignation</th>
+<th class="border border-black p-2 font-bold text-center" style="width:14mm;">Qté</th>
+<th class="border border-black p-2 font-bold text-right" style="width:26mm;">Prix Unit. HT</th>
+<th class="border border-black p-2 font-bold text-right" style="width:16mm;">TVA</th>
+<th class="border border-black p-2 font-bold text-right" style="width:26mm;">Total HT</th>
+<th class="border border-black p-2 no-print" style="width:8mm;">Suppr.</th>
 </tr>
 </thead>
-<tbody class="divide-y divide-outline-variant/5" id="itemsBody">
+<tbody id="itemsBody">
 <!-- Row 1 -->
 <tr class="group">
-<td class="py-6">
-<input class="w-full bg-transparent border-none p-0 text-sm font-semibold text-on-surface focus:ring-0 placeholder-on-surface-variant/20" placeholder="Nom de la prestation..." type="text" value="Conception UI/UX - Application Mobile"/>
+<td class="border border-black p-2">
+<input class="w-full bg-transparent border-none p-0 text-[11px] font-medium focus:ring-0 placeholder-gray-400" placeholder="Nom de la prestation..." type="text" value="Conception UI/UX - Application Mobile"/>
 </td>
-<td class="py-6 text-center"><div class="flex items-center justify-center gap-2">
-<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-decrease" type="button">
+<td class="border border-black p-2 text-center"><div class="flex items-center justify-center gap-1">
+<button class="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors no-print" data-action="qty-decrease" type="button">
 <span class="material-symbols-outlined text-sm">remove</span>
 </button>
-<input class="w-10 bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-center font-mono font-bold" type="number" value="1" min="1" step="1"/>
-<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-increase" type="button">
+<input class="w-8 bg-transparent border-none p-0 text-[11px] focus:ring-0 text-center font-bold" type="number" value="1" min="1" step="1"/>
+<button class="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors no-print" data-action="qty-increase" type="button">
 <span class="material-symbols-outlined text-sm">add</span>
 </button>
 </div></td>
-<td class="py-6 text-right">
+<td class="border border-black p-2 text-right">
 <div class="flex items-center justify-end">
-<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-right tabular-nums font-mono" type="text" value="3,200.00"/>
-<span class="ml-1 text-on-surface-variant text-xs font-semibold" data-currency-symbol>€</span>
+<input class="w-full bg-transparent border-none p-0 text-[11px] focus:ring-0 text-right tabular-nums" type="text" value="3,200.00"/>
+<span class="ml-1 text-gray-600 text-[10px] font-semibold" data-currency-symbol>€</span>
 </div>
 </td>
-<td class="py-6 text-right">
+<td class="border border-black p-2 text-right">
 <div class="flex items-center justify-end gap-1">
-<input class="w-16 bg-transparent border-none p-0 text-xs font-bold text-on-surface-variant focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="20" list="vatRates" aria-label="TVA (%)"/>
-<span class="text-on-surface-variant text-xs font-semibold">%</span>
+<input class="w-10 bg-transparent border-none p-0 text-[10px] font-semibold focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="20" list="vatRates" aria-label="TVA (%)"/>
+<span class="text-gray-600 text-[10px] font-semibold">%</span>
 </div>
 </td>
-<td class="py-6 text-right tabular-nums text-sm font-bold text-on-surface tracking-tight">3,200.00 €</td>
-<td class="py-6 text-right"><button class="text-error/60 hover:text-error transition-all hover:scale-110" data-action="row-delete" type="button">
+<td class="border border-black p-2 text-right tabular-nums text-[11px] font-bold">3,200.00 €</td>
+<td class="border border-black p-2 text-right no-print"><button class="text-red-500 hover:text-red-700 transition-all" data-action="row-delete" type="button">
 <span class="material-symbols-outlined text-lg">delete</span>
 </button></td>
 </tr>
 <!-- Row 2 -->
 <tr class="group">
-<td class="py-6">
-<input class="w-full bg-transparent border-none p-0 text-sm font-semibold text-on-surface focus:ring-0 placeholder-on-surface-variant/20" placeholder="Nom de la prestation..." type="text" value="Maintenance trimestrielle Serveurs"/>
+<td class="border border-black p-2">
+<input class="w-full bg-transparent border-none p-0 text-[11px] font-medium focus:ring-0 placeholder-gray-400" placeholder="Nom de la prestation..." type="text" value="Maintenance trimestrielle Serveurs"/>
 </td>
-<td class="py-6 text-center"><div class="flex items-center justify-center gap-2">
-<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-decrease" type="button">
+<td class="border border-black p-2 text-center"><div class="flex items-center justify-center gap-1">
+<button class="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors no-print" data-action="qty-decrease" type="button">
 <span class="material-symbols-outlined text-sm">remove</span>
 </button>
-<input class="w-10 bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-center font-mono font-bold" type="number" value="3" min="1" step="1"/>
-<button class="w-6 h-6 flex items-center justify-center rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface-variant transition-colors" data-action="qty-increase" type="button">
+<input class="w-8 bg-transparent border-none p-0 text-[11px] focus:ring-0 text-center font-bold" type="number" value="3" min="1" step="1"/>
+<button class="w-5 h-5 flex items-center justify-center rounded bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors no-print" data-action="qty-increase" type="button">
 <span class="material-symbols-outlined text-sm">add</span>
 </button>
 </div></td>
-<td class="py-6 text-right">
+<td class="border border-black p-2 text-right">
 <div class="flex items-center justify-end">
-<input class="w-full bg-transparent border-none p-0 text-sm text-on-surface focus:ring-0 text-right tabular-nums font-mono" type="text" value="450.00"/>
-<span class="ml-1 text-on-surface-variant text-xs font-semibold" data-currency-symbol>€</span>
+<input class="w-full bg-transparent border-none p-0 text-[11px] focus:ring-0 text-right tabular-nums" type="text" value="450.00"/>
+<span class="ml-1 text-gray-600 text-[10px] font-semibold" data-currency-symbol>€</span>
 </div>
 </td>
-<td class="py-6 text-right">
+<td class="border border-black p-2 text-right">
 <div class="flex items-center justify-end gap-1">
-<input class="w-16 bg-transparent border-none p-0 text-xs font-bold text-on-surface-variant focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="20" list="vatRates" aria-label="TVA (%)"/>
-<span class="text-on-surface-variant text-xs font-semibold">%</span>
+<input class="w-10 bg-transparent border-none p-0 text-[10px] font-semibold focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="20" list="vatRates" aria-label="TVA (%)"/>
+<span class="text-gray-600 text-[10px] font-semibold">%</span>
 </div>
 </td>
-<td class="py-6 text-right tabular-nums text-sm font-bold text-on-surface tracking-tight">1,350.00 €</td>
-<td class="py-6 text-right"><button class="text-error/60 hover:text-error transition-all hover:scale-110" data-action="row-delete" type="button">
+<td class="border border-black p-2 text-right tabular-nums text-[11px] font-bold">1,350.00 €</td>
+<td class="border border-black p-2 text-right no-print"><button class="text-red-500 hover:text-red-700 transition-all" data-action="row-delete" type="button">
 <span class="material-symbols-outlined text-lg">delete</span>
 </button></td>
 </tr>
@@ -497,77 +416,94 @@ TVA Intra: FR 93 842930112</textarea>
     <option value="20"></option>
 </datalist>
 
-<div class="pdf-hide mt-8 flex flex-col sm:flex-row sm:items-center gap-4">
-    <button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed border-outline-variant/30 text-[10px] font-black text-secondary uppercase tracking-[0.2em] hover:bg-secondary/5 hover:border-secondary transition-all group" type="button" data-action="add-item">
+<div class="pdf-hide mt-6 flex flex-col sm:flex-row sm:items-center gap-4">
+    <button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-dashed border-gray-400 text-[10px] font-black text-emerald-700 uppercase tracking-[0.2em] hover:bg-emerald-50 hover:border-emerald-600 transition-all group" type="button" data-action="add-item">
 <span class="material-symbols-outlined text-base group-hover:rotate-90 transition-transform">add</span>
                                 Ajouter un article
     </button>
 
-    <label class="flex items-center justify-between gap-3 px-4 py-2 rounded-lg bg-surface-container-lowest/20 border border-outline-variant/10">
-        <span class="text-[10px] font-black text-primary uppercase tracking-widest">TVA par défaut</span>
+    <label class="flex items-center justify-between gap-3 px-4 py-2 rounded-lg bg-gray-100 border border-gray-300">
+        <span class="text-[10px] font-black text-gray-700 uppercase tracking-widest">TVA par défaut</span>
         <div class="flex items-center gap-1">
-            <input id="defaultVatRate" class="w-16 bg-transparent border-none p-0 text-xs font-bold text-on-surface focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="18" list="vatRates" aria-label="TVA par défaut (%)"/>
-            <span class="text-on-surface-variant text-xs font-semibold">%</span>
+            <input id="defaultVatRate" class="w-16 bg-transparent border-none p-0 text-xs font-bold text-black focus:ring-0 text-right tabular-nums" type="number" min="0" step="0.1" value="18" list="vatRates" aria-label="TVA par défaut (%)"/>
+            <span class="text-gray-600 text-xs font-semibold">%</span>
         </div>
     </label>
 
-    <label class="flex items-center gap-3 px-4 py-2 rounded-lg bg-surface-container-lowest/20 border border-outline-variant/10">
-        <input id="regimeSuspensif" type="checkbox" class="h-4 w-4 rounded border-outline-variant/30 bg-transparent text-primary focus:ring-primary/30" aria-label="Régime suspensif"/>
-        <span class="text-[10px] font-black text-primary uppercase tracking-widest">Régime suspensif</span>
+    <label class="flex items-center gap-3 px-4 py-2 rounded-lg bg-gray-100 border border-gray-300">
+        <input id="regimeSuspensif" type="checkbox" class="h-4 w-4 rounded border-gray-400 bg-transparent text-primary focus:ring-primary/30" aria-label="Régime suspensif"/>
+        <span class="text-[10px] font-black text-gray-700 uppercase tracking-widest">Régime suspensif</span>
     </label>
 </div>
 </div>
-<!-- Footer/Totals -->
-<div class="grid grid-cols-1 md:grid-cols-2 gap-16 pt-12 border-t border-outline-variant/10" data-pdf-section="totals">
-<div class="space-y-8">
-<div class="grid grid-cols-2 gap-4">
-<div class="space-y-3">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Signature Client</p>
-<div class="h-28 w-full bg-surface-container-lowest/30 rounded-xl border-2 border-dashed border-outline-variant/10 flex flex-col items-center justify-center group cursor-pointer hover:border-primary/30 hover:bg-surface-container-high transition-all">
-<span class="material-symbols-outlined text-outline-variant/50 text-3xl group-hover:text-primary transition-colors">draw</span>
-<span class="text-[9px] text-on-surface-variant mt-2 font-semibold">Cliquer pour signer</span>
+<!-- Totals (bordered boxed table, matches the reference's totals block) -->
+<div data-pdf-section="totals">
+<div class="grid grid-cols-2 gap-4 mb-4 no-print" style="max-width:85mm;">
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Signature Client</p>
+<div class="h-20 w-full border border-dashed border-gray-400 flex flex-col items-center justify-center group cursor-pointer hover:border-gray-600 transition-all">
+<span class="material-symbols-outlined text-gray-400 text-2xl group-hover:text-black transition-colors">draw</span>
+<span class="text-[9px] text-gray-500 mt-1 font-semibold">Cliquer pour signer</span>
 </div>
 </div>
-<div class="space-y-3">
-<p class="text-[10px] font-bold text-primary uppercase tracking-widest">Cachet JEENISo</p>
-<div class="h-28 w-full bg-surface-container-lowest/30 rounded-xl border-2 border-dashed border-outline-variant/10 flex items-center justify-center relative">
-<div class="w-16 h-16 rounded-full border-2 border-primary/10 flex items-center justify-center opacity-30 rotate-12">
-<span class="text-[7px] font-black uppercase text-primary text-center">JEENISo<br/>OFFICIEL</span>
+<div class="space-y-2">
+<p class="text-[10px] font-bold text-gray-600 uppercase tracking-widest">Cachet</p>
+<div class="h-20 w-full border border-dashed border-gray-400 flex items-center justify-center relative">
+<div class="w-14 h-14 rounded-full border border-gray-400 flex items-center justify-center opacity-40 rotate-12">
+<span class="text-[6px] font-black uppercase text-center">JEENISo<br/>OFFICIEL</span>
 </div>
 </div>
 </div>
 </div>
-<div class="p-4 bg-surface-container-lowest/30 rounded-xl border border-outline-variant/5">
-<p class="text-[9px] text-on-surface-variant font-medium leading-relaxed italic">
-                                        * Modalités : Paiement exigible sous 30 jours à réception. En cas de retard, une pénalité de 3 fois le taux d'intérêt légal ainsi qu'une indemnité forfaitaire de 40€ pour frais de recouvrement seront appliquées.
-                                    </p>
+<table class="border-collapse text-[12px] ml-auto" style="min-width:70mm;">
+<tbody>
+<tr><td class="border border-black p-2 font-bold" style="background:#f0f0f0;">Total Hors Taxes</td><td class="border border-black p-2 text-right tabular-nums" id="totalHt">4,550.00 €</td></tr>
+<tr><td class="border border-black p-2 font-bold" style="background:#f0f0f0;" id="vatLabel">TVA (20%)</td><td class="border border-black p-2 text-right tabular-nums" id="totalVat">910.00 €</td></tr>
+<tr class="hidden" id="withholdingRow"><td class="border border-black p-2 font-bold" style="background:#f0f0f0;" id="withholdingLabel">Retenue (0%)</td><td class="border border-black p-2 text-right tabular-nums" id="withholdingAmount">0.00 €</td></tr>
+<tr><td class="border border-black p-3 font-black text-[13px]" style="background:#d9d9d9;">Total TTC</td><td class="border border-black p-3 text-right font-black text-[13px] tabular-nums" style="background:#d9d9d9;"><span id="totalTtc">5,460.00</span> <span data-currency-symbol>€</span></td></tr>
+<tr class="hidden" id="netToPayRow"><td class="border border-black p-2 text-[10px]">Net à payer après retenue</td><td class="border border-black p-2 text-right text-[10px] tabular-nums" id="netToPay">0.00 €</td></tr>
+</tbody>
+</table>
 </div>
+
+<!-- "Plus d'information sur cette offre" (full-width bordered box, matches the reference exactly) -->
+<div class="mt-6 border border-black p-3" data-pdf-section="notes">
+<p class="font-bold text-[14px] mb-3">Plus d'information sur cette offre :</p>
+<div class="text-[10px] leading-loose" style="padding-left:20mm;">
+<div class="flex gap-1">
+<span class="font-bold shrink-0" style="color:#2563eb;">(1)</span>
+<input class="flex-1 bg-transparent border-none p-0 text-[10px] focus:ring-0" id="noteItem1" type="text" value="Remise de 100% sur la livraison et formation."/>
 </div>
-<div class="space-y-1">
-<div class="flex justify-between items-center py-2 px-1">
-<span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest">Total Hors Taxes</span>
-<span class="text-lg font-mono font-bold text-on-surface tabular-nums" id="totalHt">4,550.00 €</span>
+<div class="flex gap-1">
+<span class="font-bold shrink-0" style="color:#2563eb;">(2)</span>
+<input class="flex-1 bg-transparent border-none p-0 text-[10px] focus:ring-0" id="noteItem2" type="text" value="Remise de 100% sur le contrat de maintenance pour le premier mois."/>
 </div>
-<div class="flex justify-between items-center py-2 px-1">
-<span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest" id="vatLabel">TVA (20%)</span>
-<span class="text-lg font-mono font-bold text-on-surface tabular-nums" id="totalVat">910.00 €</span>
+<input class="w-full bg-transparent border-none p-0 text-[10px] focus:ring-0" style="padding-left:14px;" id="noteItem2b" type="text" value="Remise de 10% sur tout le projet pour notre cher client"/>
 </div>
-<div class="flex justify-between items-center py-2 px-1 hidden" id="withholdingRow">
-<span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest" id="withholdingLabel">Retenue (0%)</span>
-<span class="text-lg font-mono font-bold text-on-surface tabular-nums" id="withholdingAmount">0.00 €</span>
+<p class="font-bold text-[10px] mt-3" style="padding-left:20mm;">
+<input class="w-full bg-transparent border-none p-0 font-bold text-[10px] focus:ring-0" id="noteExtra" type="text" value="Le Prix de l'hébergement du site n'est pas inclus dans ce devis"/>
+</p>
 </div>
-<div class="my-4 h-px bg-gradient-to-r from-transparent via-outline-variant/20 to-transparent"></div>
-<div class="flex flex-col items-end pt-4">
-<span class="text-[10px] font-black text-primary uppercase tracking-[0.3em] mb-1">Total TTC À Payer</span>
-<div class="flex items-baseline gap-2">
-<span class="text-5xl font-black text-on-surface tracking-tighter tabular-nums" id="totalTtc">5,460.00</span>
-<span class="text-2xl font-black text-primary" data-currency-symbol>€</span>
+
+<!-- NB / validity note (bold, underlined, red, centered — matches the reference exactly) -->
+<p class="mt-4 text-center text-[10px] font-bold" style="color:#c00000;text-decoration:underline;" data-pdf-section="nb">
+NB: <input class="bg-transparent border-none p-0 text-[10px] font-bold focus:ring-0 text-center" style="color:#c00000;text-decoration:underline;width:110mm;" id="quoteNote" type="text" value="Ce devis est valable jusqu'au 06/01/2026."/>
+</p>
+
+<!-- Legal / contact footer block, matches the reference's bottom company block -->
+<div class="mt-4 pt-3 flex flex-col md:flex-row justify-between gap-8 text-[9px] text-gray-700 leading-relaxed" style="border-top:1px solid #000;" data-pdf-section="footer">
+<div class="space-y-0.5">
+<p class="font-bold text-black text-[10px]" id="issuerNameFooter">JEENISo France SAS</p>
+<p class="whitespace-pre-line" id="issuerDetailsFooter">128 Rue de la Technologie, 75008 Paris, France
+SIRET: 842 930 112 00045
+TVA Intra: FR 93 842930112</p>
+<textarea class="bg-transparent border-none p-0 text-[9px] text-gray-700 focus:ring-0 resize-none w-full leading-relaxed" id="issuerRegistration" rows="2" placeholder="Numéro JORT : ...&#10;Matricule fiscale : ..."></textarea>
 </div>
-<div class="mt-2 flex justify-between items-center w-full max-w-[18rem] hidden" id="netToPayRow">
-    <span class="text-[10px] text-on-surface-variant font-black uppercase tracking-widest">Net à payer après retenue</span>
-    <span class="text-[11px] font-mono font-bold text-on-surface tabular-nums" id="netToPay">0.00 €</span>
-</div>
-</div>
+<div class="text-right space-y-0.5">
+<p class="font-bold text-black uppercase text-[9px]">Contact Responsable</p>
+<input class="bg-transparent border-none p-0 text-[9px] text-gray-700 focus:ring-0 text-right w-full" id="issuerContactName" placeholder="Nom du responsable" type="text"/>
+<div>Tel : <input class="bg-transparent border-none p-0 text-[9px] text-gray-700 focus:ring-0 text-right" style="width:32mm;" id="issuerPhone" placeholder="00 000 000" type="text"/></div>
+<div>Email : <input class="bg-transparent border-none p-0 text-[9px] focus:ring-0 text-right" style="width:40mm;" id="issuerEmail" value="contact@jeeniso.com"/></div>
 </div>
 </div>
 </div>
@@ -744,6 +680,26 @@ TVA Intra: FR 93 842930112</textarea>
 
             // Handle cached images where 'load' may not fire
             tryActivateIfLoaded();
+        })();
+
+        (function () {
+            // Mirror the issuer name/address into the bottom legal footer block
+            // (the footer repeats the letterhead, like the reference document).
+            const nameEl = document.getElementById('issuerName');
+            const detailsEl = document.getElementById('issuerDetails');
+            const nameOut = document.getElementById('issuerNameFooter');
+            const detailsOut = document.getElementById('issuerDetailsFooter');
+            if (!nameEl || !detailsEl || !nameOut || !detailsOut) return;
+
+            const sync = () => {
+                nameOut.textContent = nameEl.value || '';
+                detailsOut.textContent = detailsEl.value || '';
+            };
+
+            nameEl.addEventListener('input', sync);
+            detailsEl.addEventListener('input', sync);
+            window.__syncIssuerFooter = sync;
+            sync();
         })();
 
         (async function () {
@@ -925,6 +881,14 @@ TVA Intra: FR 93 842930112</textarea>
                     issuerName: getElValue('issuerName'),
                     issuerDetails: getElValue('issuerDetails'),
                     issuerEmail: getElValue('issuerEmail'),
+                    issuerContactName: getElValue('issuerContactName'),
+                    issuerPhone: getElValue('issuerPhone'),
+                    issuerRegistration: getElValue('issuerRegistration'),
+                    noteItem1: getElValue('noteItem1'),
+                    noteItem2: getElValue('noteItem2'),
+                    noteItem2b: getElValue('noteItem2b'),
+                    noteExtra: getElValue('noteExtra'),
+                    quoteNote: getElValue('quoteNote'),
                     clientName: getElValue('clientName'),
                     clientAddress: getElValue('clientAddress'),
                     clientFiscalId: getElValue('clientFiscalId'),
@@ -956,6 +920,16 @@ TVA Intra: FR 93 842930112</textarea>
                 setElValue('issuerName', inv.issuerName ?? '');
                 setElValue('issuerDetails', inv.issuerDetails ?? '');
                 setElValue('issuerEmail', inv.issuerEmail ?? '');
+                setElValue('issuerContactName', inv.issuerContactName ?? '');
+                setElValue('issuerPhone', inv.issuerPhone ?? '');
+                setElValue('issuerRegistration', inv.issuerRegistration ?? '');
+                if (typeof window.__syncIssuerFooter === 'function') window.__syncIssuerFooter();
+
+                setElValue('noteItem1', inv.noteItem1 ?? '');
+                setElValue('noteItem2', inv.noteItem2 ?? '');
+                setElValue('noteItem2b', inv.noteItem2b ?? '');
+                setElValue('noteExtra', inv.noteExtra ?? '');
+                setElValue('quoteNote', inv.quoteNote ?? '');
 
                 setElValue('clientName', inv.clientName ?? '');
                 setElValue('clientAddress', inv.clientAddress ?? '');
@@ -1231,6 +1205,10 @@ TVA Intra: FR 93 842930112</textarea>
                     const marginMm = 10;
                     const targetWidthMm = A4_WIDTH_MM - (marginMm * 2);
 
+                    // Running footer text (repeated on every page, mirrors the reference devis footer)
+                    const issuerNameVal = (document.getElementById('issuerName')?.value || '').trim() || 'Facture';
+                    const yearVal = String(new Date().getFullYear());
+
                     const { wrapper, clone } = createInvoiceCloneForPdf(targetWidthMm);
                     await prepareLogosForPdf(clone);
                     const canvas = await html2canvas(clone, {
@@ -1247,7 +1225,7 @@ TVA Intra: FR 93 842930112</textarea>
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
 
-                    const footerMm = 6; // reserved space for page numbering
+                    const footerMm = 6; // reserved space for the running footer / page numbering
                     const imgX = marginMm;
                     const imgY = marginMm;
 
@@ -1287,14 +1265,37 @@ TVA Intra: FR 93 842930112</textarea>
 
                         pdf.addImage(pageImg, 'PNG', imgX, imgY, imgWidthMm, pageImgHeightMm);
 
-                        // Page numbering
-                        if (totalPages > 1) {
-                            pdf.setFont('helvetica', 'normal');
-                            pdf.setFontSize(9);
-                            pdf.setTextColor(0, 0, 0);
-                            const label = `Page ${page + 1} / ${totalPages}`;
-                            pdf.text(label, pageWidth - marginMm, pageHeight - (marginMm / 2), { align: 'right' });
-                        }
+                        // Running footer: a full bordered box, copyright left, "Page X sur Y" (bold numbers) right
+                        const footerBoxHeight = 6;
+                        const footerBoxY = pageHeight - marginMm - footerBoxHeight;
+                        const footerTextY = footerBoxY + footerBoxHeight / 2 + 1.1;
+
+                        pdf.setDrawColor(0, 0, 0);
+                        pdf.setLineWidth(0.2);
+                        pdf.rect(marginMm, footerBoxY, pageWidth - marginMm * 2, footerBoxHeight);
+
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.text(`©${issuerNameVal} ${yearVal}`, marginMm + 2, footerTextY);
+
+                        const segments = [
+                            { text: 'Page ', bold: false },
+                            { text: String(page + 1), bold: true },
+                            { text: ' sur ', bold: false },
+                            { text: String(totalPages), bold: true },
+                        ];
+                        let segmentsWidth = 0;
+                        segments.forEach((seg) => {
+                            pdf.setFont('helvetica', seg.bold ? 'bold' : 'normal');
+                            segmentsWidth += pdf.getTextWidth(seg.text);
+                        });
+                        let cursorX = pageWidth - marginMm - 2 - segmentsWidth;
+                        segments.forEach((seg) => {
+                            pdf.setFont('helvetica', seg.bold ? 'bold' : 'normal');
+                            pdf.text(seg.text, cursorX, footerTextY);
+                            cursorX += pdf.getTextWidth(seg.text);
+                        });
                     }
 
                     if (mode === 'preview') {
